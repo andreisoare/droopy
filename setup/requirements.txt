@@ -1,0 +1,6 @@
+beanstalkc
+pytz
+simplejson
+mongokit
+pymongo
+ipython
