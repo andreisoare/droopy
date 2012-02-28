@@ -1,0 +1,1 @@
+from scavenger import Scavenger
