@@ -1,6 +1,9 @@
 # Copyright 2012 Sunnytrail Insight Labs Inc. All rights reserved
 # Author: diana.tiriplica@gmail.com (Diana-Victoria Tiriplica)
 
+# This scavenger gets information about a user from MySpace.
+
+import simplejson
 from scavenger_utils import http_request
 
 MYSPACE_HOST = "api.myspace.com"
@@ -15,9 +18,10 @@ def myspace(email):
   response = http_request("GET", MYSPACE_HOST, MYSPACE_PATH, params)
   if response.status == 404:
     return ""
-# TODO (Diana) parse response
-  return response.read()
+# Information useful: displayname, age, gender, location
+  return simplejson.loads(response.read())
 
 if __name__=="__main__":
-  print myspace("dia_tiriplica@yahoo.co.uk")
-  print myspace("diana.tiriplica@gmail.com")
+  data = myspace("dia_tiriplica@yahoo.co.uk")
+  for k in data:
+    print k, data[k]
