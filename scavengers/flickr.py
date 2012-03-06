@@ -58,17 +58,3 @@ def flickr(email):
   message = message[JUMP_STRING_LENGTH:len(message)-1]
 
   return json.loads(message)
-
-def main():
-  s = 'camp101988@yahoo.com'
-  s2 = 'tabara.mihai@gmail.com'
-  s3 = 'asadat@salesforce.com'
-
-  d = flickr(s)
-  if d is None:
-    print 'Username not found'
-  else:
-    print d
-
-if __name__=="__main__":
-  main()
