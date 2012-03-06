@@ -12,20 +12,17 @@
 
 import simplejson as json
 from scavenger_utils import http_request
+from urllib import urlopen
 
 FLICKR_HOST = "api.flickr.com"
 FLICKR_PATH = "/services/rest/"
 
 FLICKR_KEY = 'd75138bb5caa8f70bb5b3dc071e19e6e'
 FLICKR_PWD = '1e7edafa40c76873'
+JUMP_STRING_LENGTH = 14
 
 def flickr(email):
-  """
-  TODO(Mihai): find a better and cleaner solution.
-  The Flickr API retrieves something like 'jsonFlickrApi({..})'.
-  One solution would've been the use of urllib.urlopen instead of http_request.
-  However, I chose to substring the {..} part and convert it to json.
-  """
+  # TODO(Mihai): find a better and cleaner solution for retrieving the json
   queries = {
               "email" : "flickr.people.findByEmail",
               "user" : "flickr.people.getInfo"
@@ -40,7 +37,11 @@ def flickr(email):
 
   response = http_request("GET", FLICKR_HOST, FLICKR_PATH, params)
   message = response.read()
-  message = message[14:len(message)-1]
+  """
+    The Flickr API retrives text as 'jsonFlickrAPI({..json..})'. So what I'm
+    doing is to jump over the first 14 characters and get JSON
+  """
+  message = message[JUMP_STRING_LENGTH:len(message)-1]
   data = json.loads(message)
 
   if data['stat'] == 'fail':
@@ -54,6 +55,20 @@ def flickr(email):
 
   response = http_request("GET", FLICKR_HOST, FLICKR_PATH, params)
   message = response.read()
-  message = message[14:len(message)-1]
+  message = message[JUMP_STRING_LENGTH:len(message)-1]
 
   return json.loads(message)
+
+def main():
+  s = 'camp101988@yahoo.com'
+  s2 = 'tabara.mihai@gmail.com'
+  s3 = 'asadat@salesforce.com'
+
+  d = flickr(s)
+  if d is None:
+    print 'Username not found'
+  else:
+    print d
+
+if __name__=="__main__":
+  main()

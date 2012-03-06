@@ -18,6 +18,7 @@ JIGSAW_HOST = "www.jigsaw.com"
 JIGSAW_PATH = "/rest/searchContact.json"
 
 JIGSAW_KEY = 'rgr5hkhww2dfgcgarrj66baa'
+HTTPS_PORT = 443
 
 def jigsaw(email):
   params = {
@@ -25,7 +26,7 @@ def jigsaw(email):
               "email" : email,
            }
 
-  response = http_request("GET", JIGSAW_HOST, JIGSAW_PATH, params, 443)
+  response = http_request("GET", JIGSAW_HOST, JIGSAW_PATH, params, HTTPS_PORT)
   message = response.read()
   data = json.loads(message)
 
