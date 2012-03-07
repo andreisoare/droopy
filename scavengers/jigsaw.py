@@ -1,4 +1,4 @@
-# Copyright 2012 Droopy @Sunnytrail Insight Labs Inc. All rights reserved
+# Copyright 2012 Sunnytrail Insight Labs Inc. All rights reserved
 # Author: tabara.mihai@gmail.com (Mihai Tabara)
 
 # Jigsaw scavenger: gathers any type of personal data around an email address
@@ -10,9 +10,8 @@
 # https://www.jigsaw.com/rest/searchContact.json?token=rgr5hkhww2dfgcgarrj66baa
 # &email=asadat@salesforce.com
 
-import simplejson as json
+import json
 from scavenger_utils import http_request
-from urllib import urlopen
 
 JIGSAW_HOST = "www.jigsaw.com"
 JIGSAW_PATH = "/rest/searchContact.json"

@@ -1,0 +1,10 @@
+# Copyright 2012 Sunnytrail Insight Labs Inc. All rights reserved
+# Author: tabara.mihai@gmail.com (Mihai Tabara)
+
+Obtaining keys:
+  [Flickr] http://www.flickr.com/services/apps/create/apply
+  [Jigsaw] http://developer.jigsaw.com/member/register
+
+Run tests:
+  * test the scavangers by running the run.py script
+  * list of desired emails as command line arguments
