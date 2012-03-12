@@ -18,17 +18,22 @@ INFO_MATCH = "var _user"
 def google_plus(email):
   username = email[:email.find("@gmail.com")]
   response = http_request("GET", PICASA_HOST, "/%s" % username, {})
+  response['email'] = email
 
-  if response.status == 404:
-    return ""
-  user_id = get_user_id(response.read())
+  if response.is_error():
+    return response
+  user_id = get_user_id(response['raw_data'])
 
   params = {'key': GOOGLE_PLUS_KEY}
   response = http_request("GET", GOOGLE_HOST,
     "%s%s" % (GOOGLE_PLUS_PATH, user_id), params, httplib.HTTPS_PORT)
+  response['email'] = email
+
+  if response.is_error():
+    return response
 
 # Important info: urls, displayname, name, organization?, gender, places lived?
-  return simplejson.loads(response.read())
+  return simplejson.loads(response['raw_data'])
 
 def get_user_id(page):
   index = page.find(INFO_MATCH)

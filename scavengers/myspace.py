@@ -16,10 +16,13 @@ def myspace(email):
               'format' : 'json'
            }
   response = http_request("GET", MYSPACE_HOST, MYSPACE_PATH, params)
-  if response.status == 404:
-    return ""
+  response.email = email
+
+  if response.is_error():
+    return response
+
 # Information useful: displayname, age, gender, location
-  return simplejson.loads(response.read())
+  return simplejson.loads(response['raw_data'])
 
 if __name__=="__main__":
   data = myspace("dia_tiriplica@yahoo.co.uk")

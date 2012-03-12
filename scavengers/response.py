@@ -3,8 +3,11 @@
 #
 # Interface for the Response object from social networks.
 
-class Respose(dict):
-  def __init__(self, email):
-    self['raw_data'] = ''
-    self['status'] = 0
+class Response(dict):
+  def __init__(self, status, raw_data='', email=''):
+    self['status'] = status
+    self['raw_data'] = raw_data
     self['email'] = email
+
+  def is_error(self):
+    return True if self['status'] > 400 else False

@@ -14,11 +14,13 @@ GITHUB_PATH = "/api/v2/xml/user/email/"
 
 def github(email):
   response = http_request("GET", GITHUB_HOST, "%s%s" % (GITHUB_PATH, email), {})
+  response['email'] = email
 
-  if response.status == 404:
-    return ""
+  if response.is_error():
+    return response
+
 # Info: name, company, location, blog, login/username
-  return parseString(response.read())
+  return parseString(response['raw_data'])
 
 if __name__=="__main__":
   print github("andrei.soare@gmail.com").getElementsByTagName('name')[0].toxml()
