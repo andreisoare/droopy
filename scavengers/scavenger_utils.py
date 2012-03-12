@@ -7,6 +7,9 @@ from httplib import HTTPConnection, HTTPSConnection, HTTPResponse, HTTP_PORT
 from response import Response
 from urllib import urlencode
 
+NOT_FOUND_ERROR_CODE = 404
+DROOPY_ERROR_CODE = 600
+
 def http_request(email, method, host, service, params, port=HTTP_PORT):
 
   try:
@@ -15,4 +18,4 @@ def http_request(email, method, host, service, params, port=HTTP_PORT):
     response = conn.getresponse()
     return Response(response.status, response.read(), email)
   except:
-    return Response(600)
+    return Response(DROOPY_ERROR_CODE)

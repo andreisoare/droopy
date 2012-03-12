@@ -36,6 +36,7 @@ def flickr(email):
   response = http_request(email, "GET", FLICKR_HOST, FLICKR_PATH, params)
   if response.is_error():
     return response
+
   message = response['raw_data']
   # Jump over the first 14 characters and get the actual JSON
   message = message[RESPONSE_PREFIX_LENGTH:len(message)-1]

@@ -5,6 +5,14 @@ Obtaining keys:
   [Flickr] http://www.flickr.com/services/apps/create/apply
   [Jigsaw] http://developer.jigsaw.com/member/register
 
+Common fields for response:
+  - username
+  - display_name (first_name + last_name if exist)
+  - location
+  - profiles
+  - gender
+  - age
+
 Run tests:
   * test the scavangers by running the run.py script
   * list of desired emails as command line arguments
