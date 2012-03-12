@@ -13,8 +13,8 @@ GITHUB_HOST = "github.com"
 GITHUB_PATH = "/api/v2/xml/user/email/"
 
 def github(email):
-  response = http_request("GET", GITHUB_HOST, "%s%s" % (GITHUB_PATH, email), {})
-  response['email'] = email
+  response = http_request(email, "GET", GITHUB_HOST,
+             "%s%s" % (GITHUB_PATH, email), {})
 
   if response.is_error():
     return response

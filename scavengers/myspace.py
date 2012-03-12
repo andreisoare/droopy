@@ -15,8 +15,7 @@ def myspace(email):
               'searchBy' : 'email',
               'format' : 'json'
            }
-  response = http_request("GET", MYSPACE_HOST, MYSPACE_PATH, params)
-  response.email = email
+  response = http_request(email, "GET", MYSPACE_HOST, MYSPACE_PATH, params)
 
   if response.is_error():
     return response

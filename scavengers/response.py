@@ -10,4 +10,4 @@ class Response(dict):
     self['email'] = email
 
   def is_error(self):
-    return True if self['status'] > 400 else False
+    return True if self['status'] >= 400 else False
