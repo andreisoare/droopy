@@ -34,8 +34,10 @@ def flickr(email):
               "format" : "json"
            }
 
-  response = http_request("GET", FLICKR_HOST, FLICKR_PATH, params)
-  message = response.read()
+  response = http_request(email, "GET", FLICKR_HOST, FLICKR_PATH, params)
+  if response.is_error():
+    return response
+  message = response['raw_data']
   """
   Jump over the first 14 characters and get the actual JSON
   """
@@ -51,8 +53,8 @@ def flickr(email):
   params['user_id'] = str(user_id)
   del params['find_email']
 
-  response = http_request("GET", FLICKR_HOST, FLICKR_PATH, params)
-  message = response.read()
+  response = http_request(email, "GET", FLICKR_HOST, FLICKR_PATH, params)
+  message = response['raw_data']
   message = message[RESPONSE_PREFIX_LENGTH:len(message)-1]
 
   return json.loads(message)

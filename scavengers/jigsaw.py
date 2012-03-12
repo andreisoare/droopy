@@ -25,8 +25,11 @@ def jigsaw(email):
               "email" : email,
            }
 
-  response = http_request("GET", JIGSAW_HOST, JIGSAW_PATH, params, HTTPS_PORT)
-  message = response.read()
+  response = http_request(email, "GET", JIGSAW_HOST, JIGSAW_PATH, params, HTTPS_PORT)
+
+  if response.is_error():
+    return response
+  message = response['raw_data']
   data = json.loads(message)
 
   if data['totalHits'] == 0:
