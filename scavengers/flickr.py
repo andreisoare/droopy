@@ -10,7 +10,7 @@
 # http://api.flickr.com/services/rest/?method=flickr.people.getInfo&api_key=
 # d75138bb5caa8f70bb5b3dc071e19e6e&user_id=9910681@N02
 
-import json
+import simplejson
 from scavenger_utils import http_request
 
 FLICKR_HOST = "api.flickr.com"
@@ -21,7 +21,6 @@ FLICKR_PWD = '1e7edafa40c76873'
 RESPONSE_PREFIX_LENGTH = 14
 
 def flickr(email):
-  # TODO(Mihai): find a better and cleaner solution for retrieving the json
   queries = {
               "email" : "flickr.people.findByEmail",
               "user" : "flickr.people.getInfo"
@@ -38,12 +37,9 @@ def flickr(email):
   if response.is_error():
     return response
   message = response['raw_data']
-  """
-  Jump over the first 14 characters and get the actual JSON
-  """
+  # Jump over the first 14 characters and get the actual JSON
   message = message[RESPONSE_PREFIX_LENGTH:len(message)-1]
-  data = json.loads(message)
-
+  data = simplejson.loads(message)
   if data['stat'] == 'fail':
     return None
 
@@ -57,4 +53,4 @@ def flickr(email):
   message = response['raw_data']
   message = message[RESPONSE_PREFIX_LENGTH:len(message)-1]
 
-  return json.loads(message)
+  return simplejson.loads(message)

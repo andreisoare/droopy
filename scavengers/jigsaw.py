@@ -10,7 +10,7 @@
 # https://www.jigsaw.com/rest/searchContact.json?token=rgr5hkhww2dfgcgarrj66baa
 # &email=asadat@salesforce.com
 
-import json
+import simplejson
 from scavenger_utils import http_request
 
 JIGSAW_HOST = "www.jigsaw.com"
@@ -30,7 +30,7 @@ def jigsaw(email):
   if response.is_error():
     return response
   message = response['raw_data']
-  data = json.loads(message)
+  data = simplejson.loads(message)
 
   if data['totalHits'] == 0:
     return None
