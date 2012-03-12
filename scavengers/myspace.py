@@ -25,5 +25,4 @@ def myspace(email):
 
 if __name__=="__main__":
   data = myspace("dia_tiriplica@yahoo.co.uk")
-  for k in data:
-    print k, data[k]
+  print data

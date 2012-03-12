@@ -1,7 +1,11 @@
 # Copyright 2012 Sunnytrail Insight Labs Inc. All rights reserved.
 # Author: diana.tiriplica@gmail.com (Diana-Victoria Tiriplica)
+#
+# This scavenger gets information about a user from MySpace.
 
+import simplejson
 from scavenger import Scavenger
+from response import Response
 from scavenger_utils import http_request
 
 MYSPACE_HOST = "api.myspace.com"
@@ -12,10 +16,9 @@ class MySpaceScavenger(Scavenger):
     super(MySpaceScavenger, self).__init__(proc_id, in_tube, out_tube)
 
   def process_job(self, job):
-  # TODO(diana) how to get email?
-    email = ??
+    email = job.body
     response = self._myspace(email)
-  # TODO(diana) how we send the response
+    return response
 
   def _myspace(self, email):
     params = {
@@ -34,9 +37,11 @@ class MySpaceResponse(Response):
   def __init__(self, response):
     super(MySpaceResponse, self).__init__(response['status'],
                           response['raw_data'], response['email'])
-# TODO(diana) parse raw_data
-    self['display_name'] =
-    self['gender'] =
-    self['age'] =
-    self['location'] =
+# TODO(diana) check if profiles are given back
+    data = simplejson.loads(self['raw_data'])
+    info = data['entry'][0]
 
+    self['display_name'] = info['displayName']
+    self['gender'] = info['gender']
+    self['age'] = info['age']
+    self['location'] = info['location']

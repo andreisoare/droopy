@@ -4,3 +4,4 @@ simplejson
 mongokit
 pymongo
 ipython
+pyyaml
