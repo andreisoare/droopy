@@ -14,9 +14,9 @@ class JigsawScavenger(Scavenger):
     super(JigsawScavenger, self).__init__(proc_id, in_tube, out_tube)
 
   def process_job(self, job):
-    # TODO(mihai): get email from job
+    email = job.body
     response = self.flickr(email)
-    # TODO(mihai): put response on tube
+    return simplejson.dumps(response)
 
   def _jigsaw(self, email):
     params = {
@@ -46,12 +46,8 @@ class JigsawResponse(Response):
     message = response['raw_data']
     data = simplejson.loads(message)
 
-    self['username'] = ''
     self['display_name'] = data['contacts'][0]['firstname'] + ' ' + \
                             data['contacts'][0]['lastname']
     self['location'] = data['contacts'][0]['city'] + ' ' + \
                         data['contacts'][0]['state']
-    self['gender'] = ''
-    self['age'] = ''
-    self['profiles'] = ''
 

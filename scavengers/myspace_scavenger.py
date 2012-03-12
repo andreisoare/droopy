@@ -18,7 +18,8 @@ class MySpaceScavenger(Scavenger):
   def process_job(self, job):
     email = job.body
     response = self._myspace(email)
-    return response
+    print response
+    return simplejson.dumps(response)
 
   def _myspace(self, email):
     params = {

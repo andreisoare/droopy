@@ -22,7 +22,7 @@ class GooglePlusScavenger(Scavenger):
   def process_job(self, job):
     email = job.body
     response = self._google_plus(email)
-    return response
+    return simplejson.dumps(response)
 
   def _google_plus(self, email):
     username = email[:email.find("@gmail.com")]

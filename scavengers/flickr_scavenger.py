@@ -16,9 +16,9 @@ class FlickrScavenger(Scavenger):
     super(FlickrScavenger, self).__init__(proc_id, in_tube, out_tube)
 
   def process_job(self, job):
-    # TODO(mihai): get email from job
+    email = job.body
     response = self._flickr(email)
-    # TODO(mihai): put response on tube
+    return simplejson.dumps(response)
 
   def _flickr(self, email):
     queries = {
@@ -70,7 +70,3 @@ class FlickrResponse(Response):
     self['username'] = data['person']['username']['_content']
     self['display_name'] = data['person']['realname']['_content']
     self['location'] = data['person']['location']['_content']
-    self['gender'] = ''
-    self['age'] = ''
-    self['profiles'] = {}
-
