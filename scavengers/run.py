@@ -6,12 +6,14 @@ Flickr non-null response: camp101988@yahoo.com
 Jigsaw non-null response: asadat@salesforce.com
 """
 
-import sys, flickr, jigsaw
+import sys, flickr, jigsaw, google_plus, github, myspace
 
-# TODO(Diana): add your scavenger modules in this dictionary
 func_dict = {
               "FLICKR" : flickr.flickr,
-              "JIGSAW" : jigsaw.jigsaw
+              "JIGSAW" : jigsaw.jigsaw,
+              "GOOGLE+" : google_plus.google_plus,
+              "GITHUB" : github.github,
+              "MySpace" : myspace.myspace
             }
 
 def print_result(result, email, network):

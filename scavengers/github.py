@@ -6,6 +6,7 @@
 # WARN (diana) This API is deprecated, I emailed the support to see if they will
 # continue supporting it.
 
+import simplejson
 from xml.dom.minidom import parseString
 from scavenger_utils import http_request
 
@@ -20,7 +21,10 @@ def github(email):
     return response
 
 # Info: name, company, location, blog, login/username
-  return parseString(response['raw_data'])
+  print response['raw_data']
+# TODO(diana) parse to json
+  dom = parseString(response['raw_data'])
+  return dom
 
 if __name__=="__main__":
-  print github("andrei.soare@gmail.com").getElementsByTagName('name')[0].toxml()
+  print github("andrei.soare@gmail.com")
