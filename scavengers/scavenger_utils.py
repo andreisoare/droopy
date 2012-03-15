@@ -7,6 +7,7 @@ from httplib import HTTPConnection, HTTPSConnection, HTTPResponse, HTTP_PORT
 from response import Response
 from urllib import urlencode
 
+OK_CODE = 200
 NOT_FOUND_ERROR_CODE = 404
 DROOPY_ERROR_CODE = 600
 

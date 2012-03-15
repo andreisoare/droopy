@@ -5,3 +5,4 @@ mongokit
 pymongo
 ipython
 pyyaml
+yql
