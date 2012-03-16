@@ -4,7 +4,9 @@
 # This scavenger gets the user id for the persons with gmail account from Picasa
 # and returns information from their Google+ profiles.
 
+import re
 import simplejson
+import httplib
 from scavenger import Scavenger
 from response import Response
 from scavenger_utils import http_request
@@ -55,15 +57,15 @@ class GooglePlusResponse(Response):
                           response['raw_data'], response['email'])
     info = simplejson.loads(self['raw_data'])
 
-    if info['name']['givenName'] == "" or info['name']['lastName'] == "":
+    if info['name']['givenName'] == "" or info['name']['familyName'] == "":
       self['display_name'] = info['displayName']
     else:
-      self['display_name'] =
+      self['display_name'] = \
               "%s %s" % (info['name']['givenName'], info['name']['familyName'])
     self['gender'] = info['gender']
 
     info['profiles'] = []
-    for url in info['urls']
+    for url in info['urls']:
       if 'type' in url.keys():
         continue
       info['profiles'].append(url['value'])
