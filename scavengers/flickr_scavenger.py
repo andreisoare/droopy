@@ -2,8 +2,9 @@
 # Author: tabara.mihai@gmail.com (Mihai Tabara)
 
 import simplejson
-from scavenger import Scanvenger
-from scavenger_utils import http_request, NOT_FOUND_ERROR_MESSAGE
+from scavenger import Scavenger
+from scavenger_utils import http_request, NOT_FOUND_ERROR_CODE
+from response import Response
 
 FLICKR_HOST = "api.flickr.com"
 FLICKR_PATH = "/services/rest/"
