@@ -16,7 +16,7 @@ class JigsawScavenger(Scavenger):
 
   def process_job(self, job):
     email = job.body
-    response = self.flickr(email)
+    response = self._jigsaw(email)
     return simplejson.dumps(response)
 
   def _jigsaw(self, email):
