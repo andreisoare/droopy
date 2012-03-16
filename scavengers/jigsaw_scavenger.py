@@ -2,8 +2,9 @@
 # Author: tabara.mihai@gmail.com (Mihai Tabara)
 
 import simplejson
-from scavenger_utils import http_request, NOT_FOUND_ERROR_MESSAGE
-
+from scavenger_utils import http_request, NOT_FOUND_ERROR_CODE
+from scavenger import Scavenger
+from response import Response
 JIGSAW_HOST = "www.jigsaw.com"
 JIGSAW_PATH = "/rest/searchContact.json"
 JIGSAW_KEY = 'rgr5hkhww2dfgcgarrj66baa'
