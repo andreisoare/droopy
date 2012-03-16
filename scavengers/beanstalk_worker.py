@@ -51,6 +51,7 @@ class Worker(object):
             pass
 
     def cycle(self):
+        job = None
         try:
             self.log.info('waiting for jobs.')
 
