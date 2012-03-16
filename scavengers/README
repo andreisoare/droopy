@@ -5,6 +5,7 @@ Obtaining keys:
   [Flickr] http://www.flickr.com/services/apps/create/apply
   [Jigsaw] http://developer.jigsaw.com/member/register
   [Yahoo] https://developer.apps.yahoo.com/wsregapp/
+  [GooglePlus] https://code.google.com/apis/console
 
 Common fields for response:
   - username
@@ -13,7 +14,3 @@ Common fields for response:
   - profiles
   - gender
   - age
-
-Run tests:
-  * test the scavangers by running the run.py script
-  * list of desired emails as command line arguments
