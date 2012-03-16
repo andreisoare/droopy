@@ -2,8 +2,10 @@
 # Author: tabara.mihai@gmail.com (Mihai Tabara)
 
 import yql
+import simplejson
+from response import Response
 from scavenger import Scavenger
-from scavenger_utils import NOT_FOUND_ERROR_MESSAGE, OK_CODE
+from scavenger_utils import NOT_FOUND_ERROR_CODE, OK_CODE
 
 YAHOO_KEY = "dj0yJmk9WHBlY2dOVGNjdmtMJmQ9WVdrOVQyUmFPWE5TTm5FbWNHbzl" \
               "NVFl5TlRnNE9EUTJNZy0tJnM9Y29uc3VtZXJzZWNyZXQmeD0wNg--"
@@ -22,7 +24,7 @@ class YahooScavenger(Scavenger):
     # TODO(mihai): Add a proper method to validate yahoo addresses
     username = email[0:email.find('@')]
 
-    y = yql.TwoLegged(CONSUMER_KEY, CONSUMER_SECRET)
+    y = yql.TwoLegged(YAHOO_KEY, YAHOO_PWD)
     yql_object = y.execute("select * from social.profile where guid in \
                           (select guid from yahoo.identity \
                           where yid='%s')" % username)
@@ -38,7 +40,7 @@ class YahooResponse(Response):
                         response['raw_data'], response['email'])
 
     # TODO(mihai): Add a proper method to validate yahoo addresses
-    self['username'] = email[0:email.find('@')]
+    self['username'] = response['email'][0:response['email'].find('@')]
 
     data = response['raw_data']
 
