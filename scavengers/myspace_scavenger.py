@@ -21,11 +21,10 @@ class MySpaceScavenger(Scavenger):
     return simplejson.dumps(response)
 
   def _myspace(self, email):
-    params = {
-                'searchTerms' : email,
-                'searchBy' : 'email',
-                'format' : 'json'
-             }
+    params = {'searchTerms': email,
+              'searchBy': 'email',
+              'format': 'json'
+              }
     response = http_request(email, "GET", MYSPACE_HOST, MYSPACE_PATH, params)
 
     if response.is_error():

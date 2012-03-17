@@ -37,7 +37,8 @@ class YahooScavenger(Scavenger):
 class YahooResponse(Response):
   def __init__(self, response):
     super(YahooResponse, self).__init__(response['status'],
-                        response['raw_data'], response['email'])
+                                        response['raw_data'],
+                                        response['email'])
 
     # TODO(mihai): Add a proper method to validate yahoo addresses
     self['username'] = response['email'][0:response['email'].find('@')]
@@ -61,4 +62,3 @@ class YahooResponse(Response):
 
     if display_name is not None:
       self['display_name'] = display_name
-

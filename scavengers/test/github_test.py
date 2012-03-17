@@ -40,6 +40,3 @@ class GithubTest(unittest.TestCase):
 
   def test_email(self):
     self.assertEqual(self.response['email'], EMAIL)
-
-if __name__=="__main__":
-  unittest.main()

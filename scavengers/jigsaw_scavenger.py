@@ -20,10 +20,9 @@ class JigsawScavenger(Scavenger):
     return simplejson.dumps(response)
 
   def _jigsaw(self, email):
-    params = {
-                "token" : JIGSAW_KEY,
-                "email" : email,
-             }
+    params = {"token": JIGSAW_KEY,
+              "email": email,
+              }
 
     response = http_request(email, "GET", JIGSAW_HOST, JIGSAW_PATH,
                             params, HTTPS_PORT)

@@ -22,17 +22,15 @@ class FlickrScavenger(Scavenger):
     return simplejson.dumps(response)
 
   def _flickr(self, email):
-    queries = {
-                "email" : "flickr.people.findByEmail",
-                "user" : "flickr.people.getInfo"
-              }
+    queries = {"email": "flickr.people.findByEmail",
+               "user": "flickr.people.getInfo"
+               }
 
-    params =  {
-                "method" : queries['email'],
-                "api_key" : FLICKR_KEY,
-                "find_email" : email,
-                "format" : "json"
-              }
+    params =  {"method": queries['email'],
+               "api_key": FLICKR_KEY,
+               "find_email": email,
+               "format": "json"
+               }
 
     response = http_request(email, "GET", FLICKR_HOST, FLICKR_PATH, params)
     if response.is_error():
