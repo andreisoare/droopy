@@ -3,6 +3,10 @@
 #
 # Unit test for Yahoo scavenger.
 
+import sys
+from os.path import dirname, abspath
+sys.path.append(dirname(dirname(dirname(abspath(__file__)))))
+
 import unittest
 import thread
 import beanstalkc

@@ -1,6 +1,10 @@
 # Copyright 2012 Sunnytrail Insight Labs Inc. All rights reserved.
 # Author: tabara.mihai@gmail.com (Mihai Tabara)
-# Unit test for Jigsaw scavenger
+# Unit test for Flickr scavenger
+
+import sys
+from os.path import dirname, abspath
+sys.path.append(dirname(dirname(dirname(abspath(__file__)))))
 
 import unittest
 import thread
@@ -8,17 +12,17 @@ import beanstalkc
 import simplejson
 from scavengers.scavenger import Scavenger
 from scavengers.scavenger_utils import OK_CODE
-from scavengers.jigsaw_scavenger import JigsawScavenger
+from scavengers.flickr_scavenger import FlickrScavenger
 
 NAME = "flickr"
 IN = NAME + "_in"
 OUT = NAME + "_out"
-EMAIL = "asadat@salesforce.com"
+EMAIL = "camp101988@yahoo.com"
 TIMEOUT = 10
 
-class JigsawTest(unittest.TestCase):
+class FlickrTest(unittest.TestCase):
   def setUp(self):
-    self.scavenger = JigsawScavenger(NAME, IN, OUT)
+    self.scavenger = FlickrScavenger(NAME, IN, OUT)
     thread.start_new_thread(self.scavenger.run, ())
 
     beanstalk = beanstalkc.Connection()

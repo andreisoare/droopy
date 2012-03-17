@@ -1,8 +1,11 @@
 # Copyright 2012 Sunnytrail Insight Labs Inc. All rights reserved.
 # Author: diana.tiriplica@gmail.com (Diana-Victoria Tiriplica)
-#         tabara.mihai@gmail.com (Mihai Tabara)
 #
-# Unit test for MySpace scavenger.
+# Unit test for GooglePlus scavenger.
+
+import sys
+from os.path import dirname, abspath
+sys.path.append(dirname(dirname(dirname(abspath(__file__)))))
 
 import unittest
 import thread
@@ -10,17 +13,17 @@ import beanstalkc
 import simplejson
 from scavengers.scavenger import Scavenger
 from scavengers.scavenger_utils import OK_CODE
-from scavengers.myspace_scavenger import MySpaceScavenger
+from scavengers.google_plus_scavenger import GooglePlusScavenger
 
-NAME = "myspace"
+NAME = "google_plus"
 IN = NAME + "_in"
 OUT = NAME + "_out"
-EMAIL = "dia_tiriplica@yahoo.co.uk"
+EMAIL = "andrei.soare@gmail.com"
 TIMEOUT = 10
 
-class MySpaceTest(unittest.TestCase):
+class GooglePlusTest(unittest.TestCase):
   def setUp(self):
-    self.scavenger = MySpaceScavenger(NAME, IN, OUT)
+    self.scavenger = GooglePlusScavenger(NAME, IN, OUT)
     thread.start_new_thread(self.scavenger.run, ())
 
     beanstalk = beanstalkc.Connection()
