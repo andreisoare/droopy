@@ -6,17 +6,11 @@
 import global_settings
 from mongokit import Connection
 
-from mongodb.models import Client, MessageBatch, Digest, \
-                           Company, APIUsage, UserEvent, \
-                           ApiMessage, MessageThread, \
-                           TwitterStreamEvent, TwitterStreamRoute
+from mongodb.models import SocialProfile
 
 def register_all(conn):
   """Register models to mongodb connection."""
-  conn.register([Client, MessageBatch, Digest,
-                 Company, APIUsage, UserEvent,
-                 ApiMessage, MessageThread,
-                 TwitterStreamEvent, TwitterStreamRoute
+  conn.register([SocialProfile,
                  ])
 
 def get_mongo_connection(host=None, port=None):
