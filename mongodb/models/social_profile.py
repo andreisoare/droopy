@@ -1,17 +1,16 @@
 # Copyright 2012 Sunnytrail Insight Labs Inc. All rights reserved.
 # Author: andrei@thesunnytrail.com (Andrei Soare)
 #
-# Client data model.
+# SocialProfile data model.
 
 import logging
 
 from base_document import BaseDocument
 from datetime import datetime
 
-class FlickrResponse:
 
+class SocialProfile(BaseDocument):
 
-class Client(BaseDocument):
   structure = {
     # Last modified time
     'time' : datetime,
