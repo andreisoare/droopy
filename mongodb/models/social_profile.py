@@ -13,10 +13,10 @@ class SocialProfile(BaseDocument):
 
   structure = {
     # Last modified time
-    'time' : datetime,
+    'time': datetime,
 
     # Email address
-    'email' : unicode,
+    'email': unicode,
 
     # Personal data
     'age': [int, int],
@@ -30,8 +30,8 @@ class SocialProfile(BaseDocument):
 
     # Data from Github
     'github_status': int.
-    'github_raw': unicode,
     'github_link': unicode,
+    'github_parsed': dict,
 
     # And so on ...
   }
