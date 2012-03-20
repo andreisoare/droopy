@@ -19,7 +19,7 @@ NAME = "github"
 IN = NAME + "_in"
 OUT = NAME + "_out"
 EMAIL = "andrei.soare@gmail.com"
-TIMEOUT = 10
+TIMEOUT = 5
 
 class GithubTest(unittest.TestCase):
   def setUp(self):

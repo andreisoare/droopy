@@ -20,7 +20,7 @@ NAME = "myspace"
 IN = NAME + "_in"
 OUT = NAME + "_out"
 EMAIL = "dia_tiriplica@yahoo.co.uk"
-TIMEOUT = 10
+TIMEOUT = 5
 
 class MySpaceTest(unittest.TestCase):
   def setUp(self):

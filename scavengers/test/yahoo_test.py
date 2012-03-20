@@ -19,7 +19,7 @@ NAME = "yahoo"
 IN = NAME + "_in"
 OUT = NAME + "_out"
 EMAIL = "camp101988@yahoo.com"
-TIMEOUT = 10
+TIMEOUT = 5
 
 class YahooTest(unittest.TestCase):
   def setUp(self):

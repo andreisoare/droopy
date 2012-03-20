@@ -18,7 +18,7 @@ NAME = "flickr"
 IN = NAME + "_in"
 OUT = NAME + "_out"
 EMAIL = "asadat@salesforce.com"
-TIMEOUT = 10
+TIMEOUT = 5
 
 class JigsawTest(unittest.TestCase):
   def setUp(self):
