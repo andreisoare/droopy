@@ -11,31 +11,51 @@ import thread
 import beanstalkc
 import simplejson
 from scavengers.scavenger import Scavenger
-from scavengers.scavenger_utils import OK_CODE
+from scavengers.scavenger_utils import OK_CODE, NOT_FOUND_ERROR_CODE
 from scavengers.jigsaw_scavenger import JigsawScavenger
 
-NAME = "flickr"
+NAME = "jigsaw"
 IN = NAME + "_in"
 OUT = NAME + "_out"
-EMAIL = "asadat@salesforce.com"
 TIMEOUT = 5
+
+EMAIL_VALID = "asadat@salesforce.com"
+EMAIL_INVALID = "tabara.mihai@gmail.com"
+DISPLAY_NAME = "Ali Sadat"
+LOCATION = "San Francisco CA"
+PROFILE = "http://www.jigsaw.com/BC.xhtml?contactId=45003056"
 
 class JigsawTest(unittest.TestCase):
   def setUp(self):
     self.scavenger = JigsawScavenger(NAME, IN, OUT)
     thread.start_new_thread(self.scavenger.run, ())
 
+  def test_valid(self):
     beanstalk = beanstalkc.Connection()
     beanstalk.use(IN)
-    beanstalk.put(EMAIL)
+    beanstalk.put(EMAIL_VALID)
 
     beanstalk.watch(OUT)
     job = beanstalk.reserve(timeout=TIMEOUT)
     self.response = simplejson.loads(job.body)
     job.delete()
 
-  def test_status(self):
     self.assertEqual(self.response['status'], OK_CODE)
+    self.assertEqual(self.response['email'], EMAIL_VALID)
+    self.assertEqual(self.response['display_name'], DISPLAY_NAME)
+    self.assertEqual(self.response['location'], LOCATION)
+    self.assertEqual(self.response['profiles'][0], PROFILE)
 
-  def test_email(self):
-    self.assertEqual(self.response['email'], EMAIL)
+  def test_invalid(self):
+    beanstalk = beanstalkc.Connection()
+    beanstalk.use(IN)
+    beanstalk.put(EMAIL_INVALID)
+
+    beanstalk.watch(OUT)
+    job = beanstalk.reserve(timeout=TIMEOUT)
+    self.response = simplejson.loads(job.body)
+    job.delete()
+
+    self.assertEqual(self.response['status'], NOT_FOUND_ERROR_CODE)
+    self.assertEqual(self.response['email'], EMAIL_INVALID)
+

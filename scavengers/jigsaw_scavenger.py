@@ -33,7 +33,7 @@ class JigsawScavenger(Scavenger):
     data = simplejson.loads(message)
 
     if data['totalHits'] == 0:
-      response['status'] = NOT_FOUND_ERROR_MESSAGE
+      response['status'] = NOT_FOUND_ERROR_CODE
       return response
 
     return JigsawResponse(response)
@@ -50,4 +50,5 @@ class JigsawResponse(Response):
                             data['contacts'][0]['lastname']
     self['location'] = data['contacts'][0]['city'] + ' ' + \
                         data['contacts'][0]['state']
+    self['profiles'] = [data['contacts'][0]['contactURL']]
 

@@ -12,31 +12,53 @@ import thread
 import beanstalkc
 import simplejson
 from scavengers.scavenger import Scavenger
-from scavengers.scavenger_utils import OK_CODE
+from scavengers.scavenger_utils import OK_CODE, NOT_FOUND_ERROR_CODE
 from scavengers.github_scavenger import GithubScavenger
 
 NAME = "github"
 IN = NAME + "_in"
 OUT = NAME + "_out"
-EMAIL = "andrei.soare@gmail.com"
 TIMEOUT = 5
+
+EMAIL_VALID = "andrei.soare@gmail.com"
+EMAIL_INVALID = "asoare13@yahoo.com"
+USERNAME = "andreisoare"
+DISPLAY_NAME = "Andrei Soare"
+LOCATION = "Vancouver, Canada"
+PROFILE = "github.com/andreisoare"
 
 class GithubTest(unittest.TestCase):
   def setUp(self):
     self.scavenger = GithubScavenger(NAME, IN, OUT)
     thread.start_new_thread(self.scavenger.run, ())
 
+  def test_valid(self):
     beanstalk = beanstalkc.Connection()
     beanstalk.use(IN)
-    beanstalk.put(EMAIL)
+    beanstalk.put(EMAIL_VALID)
 
     beanstalk.watch(OUT)
     job = beanstalk.reserve(timeout=TIMEOUT)
     self.response = simplejson.loads(job.body)
     job.delete()
 
-  def test_status(self):
     self.assertEqual(self.response['status'], OK_CODE)
+    self.assertEqual(self.response['email'], EMAIL_VALID)
+    self.assertEqual(self.response['username'], USERNAME)
+    self.assertEqual(self.response['display_name'], DISPLAY_NAME)
+    self.assertEqual(self.response['location'], LOCATION)
+    self.assertEqual(self.response['profiles'][0], PROFILE)
 
-  def test_email(self):
-    self.assertEqual(self.response['email'], EMAIL)
+  def test_invalid(self):
+    beanstalk = beanstalkc.Connection()
+    beanstalk.use(IN)
+    beanstalk.put(EMAIL_INVALID)
+
+    beanstalk.watch(OUT)
+    job = beanstalk.reserve(timeout=TIMEOUT)
+    self.response = simplejson.loads(job.body)
+    job.delete()
+
+    self.assertEqual(self.response['status'], NOT_FOUND_ERROR_CODE)
+    self.assertEqual(self.response['email'], EMAIL_INVALID)
+

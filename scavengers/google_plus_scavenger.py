@@ -64,8 +64,12 @@ class GooglePlusResponse(Response):
               "%s %s" % (info['name']['givenName'], info['name']['familyName'])
     self['gender'] = info['gender']
 
-    info['profiles'] = []
+    self['profiles'] = []
     for url in info['urls']:
       if 'type' in url.keys():
-        continue
-      info['profiles'].append(url['value'])
+        if url['type'] == "profile":
+          self['profiles'].insert(0, url['value'])
+        else:
+          continue
+      self['profiles'].append(url['value'])
+

@@ -30,7 +30,7 @@ class YahooScavenger(Scavenger):
                           where yid='%s')" % username)
 
     if yql_object.count == None:
-      return Response(NOT_FOUND_ERROR_MESSAGE, '', email)
+      return Response(NOT_FOUND_ERROR_CODE, '', email)
 
     return YahooResponse(Response(OK_CODE, yql_object.one(), email))
 
@@ -62,3 +62,4 @@ class YahooResponse(Response):
 
     if display_name is not None:
       self['display_name'] = display_name
+

@@ -44,3 +44,5 @@ class MySpaceResponse(Response):
     self['gender'] = info['gender']
     self['age'] = info['age']
     self['location'] = info['location']
+    self['profiles'] = [info['profileUrl']]
+

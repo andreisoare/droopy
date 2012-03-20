@@ -42,7 +42,7 @@ class FlickrScavenger(Scavenger):
     data = simplejson.loads(message)
 
     if data['stat'] == 'fail':
-      response['status'] = NOT_FOUND_ERROR_MESSAGE
+      response['status'] = NOT_FOUND_ERROR_CODE
       return response
 
     user_id = data['user']['id']
@@ -69,3 +69,5 @@ class FlickrResponse(Response):
     self['username'] = data['person']['username']['_content']
     self['display_name'] = data['person']['realname']['_content']
     self['location'] = data['person']['location']['_content']
+    self['profiles'] = [data['person']['profileurl']['_content']]
+

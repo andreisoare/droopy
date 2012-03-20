@@ -19,4 +19,4 @@ def http_request(email, method, host, service, params, port=HTTP_PORT):
     response = conn.getresponse()
     return Response(response.status, response.read(), email)
   except:
-    return Response(DROOPY_ERROR_CODE)
+    return Response(DROOPY_ERROR_CODE, '', email)
