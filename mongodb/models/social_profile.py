@@ -29,7 +29,7 @@ class SocialProfile(BaseDocument):
     'flickr_parsed': dict,
 
     # Data from Github
-    'github_status': int.
+    'github_status': int,
     'github_link': unicode,
     'github_parsed': dict,
 
