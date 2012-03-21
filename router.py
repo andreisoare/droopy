@@ -1,11 +1,14 @@
 # Copyright 2012 Sunnytrail Insight Labs Inc. All rights reserved.
 # Author: mihai.tabara@gmail.com (Mihai Tabara)
+#         diana.tiriplica@gmail.com (Diana-Victoria Tiriplica)
 
 import beanstalkc
 import thread
 import simplejson
 
 from datetime import datetime
+from base.mongodb_utils import get_mongo_connection
+from mongodb.models import SocialProfile
 from scavengers import FlickrScavenger, GithubScavenger, GooglePlusScavenger, \
                       JigsawScavenger, MyspaceScavenger, YahooScavenger
 
@@ -18,7 +21,33 @@ scavengers_dict = {
                     'yahoo' : YahooScavenger
                   }
 
+EMAIL_QUEUE = "eta_queue"
 RESPONSE_QUEUE = "response_queue"
+
+class EmailProcessor:
+  def __init__(self):
+    self.router = Router()
+    self.beanstalk = beanstalkc.Connection()
+    conn = get_mongo_connection()
+    self.profiles = conn.droopy.profiles
+
+    self.beanstalk.watch(EMAIL_QUEUE)
+
+  def run(self):
+    while True:
+      job = self.beanstalk.reserve()
+      if job is None:
+        continue
+
+      email = job.body
+      social_profile = self.profiles.SocialProfile()
+      social_profile.email = unicode(email)
+      social_profile.time = datetime.now()
+      social_profile.save()
+
+      self.router.forward_email(social_profile)
+
+      job.delete()
 
 class Router:
   def __init__(self):
