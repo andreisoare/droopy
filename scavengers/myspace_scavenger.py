@@ -11,9 +11,9 @@ from scavenger_utils import http_request
 MYSPACE_HOST = "api.myspace.com"
 MYSPACE_PATH = "/opensearch/people/"
 
-class MySpaceScavenger(Scavenger):
+class MyspaceScavenger(Scavenger):
   def __init__(self, proc_id, in_tube, out_tube):
-    super(MySpaceScavenger, self).__init__(proc_id, in_tube, out_tube)
+    super(MyspaceScavenger, self).__init__(proc_id, in_tube, out_tube)
 
   def process_job(self, job):
     email = job.body
@@ -30,11 +30,11 @@ class MySpaceScavenger(Scavenger):
     if response.is_error():
       return response
 
-    return MySpaceResponse(response)
+    return MyspaceResponse(response)
 
-class MySpaceResponse(Response):
+class MyspaceResponse(Response):
   def __init__(self, response):
-    super(MySpaceResponse, self).__init__(response['status'],
+    super(MyspaceResponse, self).__init__(response['status'],
                           response['raw_data'], response['email'])
 # TODO(diana) check if profiles are given back
     data = simplejson.loads(self['raw_data'])

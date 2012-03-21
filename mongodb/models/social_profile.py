@@ -20,8 +20,11 @@ class SocialProfile(BaseDocument):
 
     # Personal data
     'age': [int, int],
-    'name': unicode,
     'location': unicode,
+    'username': unicode,
+    'display_name': unicode,
+    'profiles': [unicode],
+    'gender': unicode,
 
     # Data from Flickr
     'flickr_status': int,
@@ -33,7 +36,25 @@ class SocialProfile(BaseDocument):
     'github_link': unicode,
     'github_parsed': dict,
 
-    # And so on ...
+    # Data from GooglePlus
+    'google_plus_status': int,
+    'google_plus_link': unicode,
+    'google_plus_parsed': dict,
+
+    # Data from Jigsaw
+    'jigsaw_status': int,
+    'jigsaw_link': unicode,
+    'jigsaw_parsed': dict,
+
+    # Data from Myspace
+    'myspace_status': int,
+    'myspace_link': unicode,
+    'myspace_parsed': dict,
+
+    # Data from Yahoo
+    'yahoo_status': int,
+    'yahoo_link': unicode,
+    'yahoo_parsed': dict,
   }
 
   required_fields = ['email', 'time']
@@ -41,6 +62,10 @@ class SocialProfile(BaseDocument):
   default_values = {
     'flickr_status': 0,
     'github_status': 0,
+    'google_plus_status': 0,
+    'jigsaw_status': 0,
+    'myspace_status': 0,
+    'yahoo_status': 0,
   }
 
   indexes = [

@@ -14,7 +14,7 @@ import beanstalkc
 import simplejson
 from scavengers.scavenger import Scavenger
 from scavengers.scavenger_utils import OK_CODE, NOT_FOUND_ERROR_CODE
-from scavengers.myspace_scavenger import MySpaceScavenger
+from scavengers.myspace_scavenger import MyspaceScavenger
 
 NAME = "myspace"
 IN = NAME + "_in"
@@ -29,9 +29,9 @@ AGE = "22"
 LOCATION = "Bucuresti (hometown Tg-Jiu)"
 PROFILE = "http://www.myspace.com/434790566"
 
-class MySpaceTest(unittest.TestCase):
+class MyspaceTest(unittest.TestCase):
   def setUp(self):
-    self.scavenger = MySpaceScavenger(NAME, IN, OUT)
+    self.scavenger = MyspaceScavenger(NAME, IN, OUT)
     thread.start_new_thread(self.scavenger.run, ())
 
   def test_valid(self):
