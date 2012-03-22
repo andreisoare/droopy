@@ -60,6 +60,7 @@ class GooglePlusResponse(Response):
   def __init__(self, response):
     super(GooglePlusResponse, self).__init__(response['status'],
                           response['raw_data'], response['email'])
+
     info = simplejson.loads(self['raw_data'])
 
     if info['name']['givenName'] == "" or info['name']['familyName'] == "":

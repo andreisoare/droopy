@@ -66,6 +66,8 @@ class SocialProfile(BaseDocument):
     'jigsaw_status': 0,
     'myspace_status': 0,
     'yahoo_status': 0,
+    'age': [],
+    'profiles': [],
   }
 
   indexes = [

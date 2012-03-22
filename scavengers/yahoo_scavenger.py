@@ -44,11 +44,10 @@ class YahooResponse(Response):
                                         response['raw_data'],
                                         response['email'])
 
-    # TODO(mihai): Add a proper method to validate yahoo addresses
-    self['username'] = response['email'][0:response['email'].find('@')]
-
     data = response['raw_data']
 
+    # TODO(mihai): Add a proper method to validate yahoo addresses
+    self['username'] = response['email'][0:response['email'].find('@')]
     if 'location' in data:
       self['location'] = data['location']
     if 'gender' in data:

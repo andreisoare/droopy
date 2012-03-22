@@ -43,13 +43,16 @@ class GithubResponse(Response):
   def __init__(self, response):
     super(GithubResponse, self).__init__(response['status'],
                           response['raw_data'], response['email'])
+
     dom = minidom.parseString(self['raw_data'])
     info = dom.getElementsByTagName("user")[0]
+
     self['display_name'] = self._get_info(info, "name")
     self['location'] = self._get_info(info, "location")
-    self['profiles'] = [self._get_info(info, "blog")]
-    self['username'] = self._get_info(info, "login")
     self['profiles'] = [GITHUB_HOST + "/" + self._get_info(info, "login")]
+    if len(self._get_info(info, "blog")):
+      self['profiles'].append(self._get_info(info, "blog"))
+    self['username'] = self._get_info(info, "login")
 
   def _get_info(self, info, parameter):
     elem = info.getElementsByTagName(parameter)[0]

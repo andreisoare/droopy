@@ -24,31 +24,6 @@ scavengers_dict = {
 EMAIL_QUEUE = "eta_queue"
 RESPONSE_QUEUE = "response_queue"
 
-class EmailProcessor:
-  def __init__(self):
-    self.router = Router()
-    self.beanstalk = beanstalkc.Connection()
-    conn = get_mongo_connection()
-    self.profiles = conn.droopy.profiles
-
-    self.beanstalk.watch(EMAIL_QUEUE)
-
-  def run(self):
-    while True:
-      job = self.beanstalk.reserve()
-      if job is None:
-        continue
-
-      email = job.body
-      social_profile = self.profiles.SocialProfile()
-      social_profile.email = unicode(email)
-      social_profile.time = datetime.now()
-      social_profile.save()
-
-      self.router.forward_email(social_profile)
-
-      job.delete()
-
 class Router:
   def __init__(self):
     self.scavengers = []
@@ -59,14 +34,34 @@ class Router:
     self.response_beanstalk.watch(RESPONSE_QUEUE)
     thread.start_new_thread(self.watch_responses, ())
 
+    conn = get_mongo_connection()
+    self.profiles = conn.droopy.profiles
+
     for key in scavengers_dict:
       scavenger = scavengers_dict[key](key, key + '_in', RESPONSE_QUEUE)
       self.scavengers.append(scavenger)
       thread.start_new_thread(scavenger.run, ())
 
-  def forward_email(self, social_profile):
-    self.processing_profiles[str(social_profile.email)] = social_profile
+  def run(self):
+    beanstalk = beanstalkc.Connection()
+    beanstalk.watch(EMAIL_QUEUE)
 
+    while True:
+      job = beanstalk.reserve()
+      if job is None:
+        continue
+
+      email = job.body
+      social_profile = self.profiles.SocialProfile()
+      self.processing_profiles[email] = social_profile
+      social_profile.email = unicode(email)
+      social_profile.time = datetime.now()
+      social_profile.save()
+
+      self.forward_email(social_profile)
+      job.delete()
+
+  def forward_email(self, social_profile):
     for key in scavengers_dict:
       self.email_beanstalk.use(key + '_in')
       self.email_beanstalk.put(str(social_profile.email))
@@ -86,17 +81,41 @@ class Router:
     response_object = queue_response['response']
     network_type = queue_response['type']
 
-    social_profile = self.processing_profiles[response_object['email']]
+    social_profile = self.processing_profiles[str(response_object['email'])]
 
     status = network_type + '_status'
     link = network_type + '_link'
     parsed = network_type + '_parsed'
 
-    social_profile[status] = response_object['status']
-    social_profile.link = unicode(response_object['profiles'][0])
-    social_profile.parsed = response_object
-    social_profile.time = datetime.now()
+    social_profile[status] = int(response_object['status'])
+    if social_profile[status] >= 400:
+      social_profile[link] = unicode("")
+    else:
+      social_profile[link] = unicode(response_object['profiles'][0])
+    social_profile[parsed] = response_object
 
+    if int(response_object['status']) < 400:
+      if 'username' in response_object and len(response_object['username']):
+        social_profile.username = unicode(response_object['username'])
+      if 'display_name' in response_object and \
+                                          len(response_object['display_name']):
+        social_profile.display_name = unicode(response_object['display_name'])
+      if 'age' in response_object and len(response_object['age']):
+        ages = list(social_profile.age)
+        ages.append(int(response_object['age']))
+        sorted(ages)
+        start = ages[0]
+        end = ages[-1]
+        social_profile.age = [start, end]
+      if 'location' in response_object and len(response_object['location']):
+        social_profile.location = unicode(response_object['location'])
+      if 'gender' in response_object and len(response_object['gender']):
+        social_profile.gender = unicode(response_object['gender'])
+      if 'profiles' in response_object:
+        for profile in response_object['profiles']:
+          social_profile.profiles.append(unicode(profile))
+
+    social_profile.time = datetime.now()
     social_profile.save()
     self.test_profile_completion(social_profile)
 
@@ -104,15 +123,13 @@ class Router:
     profile_complete = True
     for key in scavengers_dict:
       status = key + '_status'
-      if social_profile.status == 0:
+      if social_profile[status] == 0:
         profile_complete = False
         break
 
     if profile_complete is True:
-      # TODO(mihai): join data to complete personal data information
-      social_profile.save()
       del self.processing_profiles[str(social_profile.email)]
 
 if __name__=="__main__":
-  em = EmailProcessor()
-  em.run()
+  r = Router()
+  r.run()
