@@ -92,13 +92,12 @@ class Router:
     link = network_type + '_link'
     parsed = network_type + '_parsed'
 
-    social_profile.status = response_object['status']
+    social_profile[status] = response_object['status']
     social_profile.link = unicode(response_object['profiles'][0])
     social_profile.parsed = response_object
     social_profile.time = datetime.now()
 
     social_profile.save()
-
     self.test_profile_completion(social_profile)
 
   def test_profile_completion(self, social_profile):
@@ -113,3 +112,7 @@ class Router:
       # TODO(mihai): join data to complete personal data information
       social_profile.save()
       del self.processing_profiles[str(social_profile.email)]
+
+if __name__=="__main__":
+  em = EmailProcessor()
+  em.run()
