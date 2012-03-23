@@ -38,7 +38,7 @@ class GooglePlusTest(unittest.TestCase):
 
     beanstalk.watch(OUT)
     job = beanstalk.reserve(timeout=TIMEOUT)
-    self.response = simplejson.loads(job.body)
+    self.response = simplejson.loads(job.body)['response']
     job.delete()
 
     self.assertEqual(self.response['status'], OK_CODE)
@@ -54,7 +54,7 @@ class GooglePlusTest(unittest.TestCase):
 
     beanstalk.watch(OUT)
     job = beanstalk.reserve(timeout=TIMEOUT)
-    self.response = simplejson.loads(job.body)
+    self.response = simplejson.loads(job.body)['response']
     job.delete()
 
     self.assertEqual(self.response['status'], NOT_FOUND_ERROR_CODE)

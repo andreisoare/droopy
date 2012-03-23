@@ -7,6 +7,7 @@ from response import Response
 from scavenger import Scavenger
 from scavenger_utils import NOT_FOUND_ERROR_CODE, OK_CODE
 
+YAHOO = "yahoo"
 YAHOO_KEY = "dj0yJmk9WHBlY2dOVGNjdmtMJmQ9WVdrOVQyUmFPWE5TTm5FbWNHbzl" \
               "NVFl5TlRnNE9EUTJNZy0tJnM9Y29uc3VtZXJzZWNyZXQmeD0wNg--"
 YAHOO_PWD = '4e76035fb8fc87922616b04917e2cafeda0b3c0a'
@@ -18,10 +19,13 @@ class YahooScavenger(Scavenger):
   def process_job(self, job):
     email = job.body
     response = self._yahoo(email)
-    return simplejson.dumps(response)
+    return simplejson.dumps(
+                            { 'type' : YAHOO,
+                              'response' : response
+                            }
+                           )
 
   def _yahoo(self, email):
-    # TODO(mihai): Add a proper method to validate yahoo addresses
     username = email[0:email.find('@')]
 
     y = yql.TwoLegged(YAHOO_KEY, YAHOO_PWD)

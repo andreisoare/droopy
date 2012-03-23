@@ -11,6 +11,7 @@ from scavenger import Scavenger
 from response import Response
 from scavenger_utils import http_request
 
+GOOGLE_PLUS = "google_plus"
 PICASA_HOST = "picasaweb.google.com"
 GOOGLE_HOST = "www.googleapis.com"
 GOOGLE_PLUS_PATH = "/plus/v1/people/"
@@ -24,7 +25,11 @@ class GooglePlusScavenger(Scavenger):
   def process_job(self, job):
     email = job.body
     response = self._google_plus(email)
-    return simplejson.dumps(response)
+    return simplejson.dumps(
+                            { 'type' : GOOGLE_PLUS,
+                              'response' : response
+                            }
+                           )
 
   def _google_plus(self, email):
     username = email[:email.find("@gmail.com")]

@@ -6,6 +6,7 @@ from scavenger import Scavenger
 from scavenger_utils import http_request, NOT_FOUND_ERROR_CODE
 from response import Response
 
+FLICKR = 'flickr'
 FLICKR_HOST = "api.flickr.com"
 FLICKR_PATH = "/services/rest/"
 FLICKR_KEY = 'd75138bb5caa8f70bb5b3dc071e19e6e'
@@ -19,7 +20,11 @@ class FlickrScavenger(Scavenger):
   def process_job(self, job):
     email = job.body
     response = self._flickr(email)
-    return simplejson.dumps(response)
+    return simplejson.dumps(
+                            { 'type' : FLICKR,
+                              'response' : response
+                            }
+                           )
 
   def _flickr(self, email):
     queries = {"email": "flickr.people.findByEmail",

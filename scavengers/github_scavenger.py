@@ -12,6 +12,7 @@ from response import Response
 from scavenger_utils import http_request
 from xml.dom import minidom
 
+GITHUB = "github"
 GITHUB_HOST = "github.com"
 GITHUB_PATH = "/api/v2/xml/user/email/"
 
@@ -22,7 +23,12 @@ class GithubScavenger(Scavenger):
   def process_job(self, job):
     email = job.body
     response = self._github(email)
-    return simplejson.dumps(response)
+    return simplejson.dumps(
+                            { 'type' : GITHUB,
+                              'response' : response
+                            }
+                           )
+
 
   def _github(self, email):
     response = http_request(email, "GET", GITHUB_HOST,

@@ -8,6 +8,7 @@ from scavenger import Scavenger
 from response import Response
 from scavenger_utils import http_request
 
+MYSPACE = "myspace"
 MYSPACE_HOST = "api.myspace.com"
 MYSPACE_PATH = "/opensearch/people/"
 
@@ -18,7 +19,11 @@ class MyspaceScavenger(Scavenger):
   def process_job(self, job):
     email = job.body
     response = self._myspace(email)
-    return simplejson.dumps(response)
+    return simplejson.dumps(
+                            { 'type' : MYSPACE,
+                              'response' : response
+                            }
+                           )
 
   def _myspace(self, email):
     params = {'searchTerms': email,
