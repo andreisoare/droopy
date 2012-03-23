@@ -5,10 +5,11 @@ import simplejson
 from scavenger_utils import http_request, NOT_FOUND_ERROR_CODE
 from scavenger import Scavenger
 from response import Response
+import httplib
+
 JIGSAW_HOST = "www.jigsaw.com"
 JIGSAW_PATH = "/rest/searchContact.json"
 JIGSAW_KEY = 'rgr5hkhww2dfgcgarrj66baa'
-HTTPS_PORT = 443
 
 class JigsawScavenger(Scavenger):
   def __init__(self, proc_id, in_tube, out_tube):
@@ -25,7 +26,7 @@ class JigsawScavenger(Scavenger):
               }
 
     response = http_request(email, "GET", JIGSAW_HOST, JIGSAW_PATH,
-                            params, HTTPS_PORT)
+                            params, httplib.HTTPS_PORT)
     if response.is_error():
       return response
 
