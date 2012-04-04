@@ -10,7 +10,7 @@ from datetime import datetime
 from base.mongodb_utils import get_mongo_connection
 from mongodb.models import SocialProfile
 from scavengers import FlickrScavenger, GithubScavenger, GooglePlusScavenger, \
-                      JigsawScavenger, MyspaceScavenger, YahooScavenger
+          JigsawScavenger, MyspaceScavenger, YahooScavenger, FoursquareScavenger
 
 scavengers_dict = {
                     'flickr' : FlickrScavenger,
@@ -18,7 +18,8 @@ scavengers_dict = {
                     'google_plus' : GooglePlusScavenger,
                     'jigsaw' : JigsawScavenger,
                     'myspace' : MyspaceScavenger,
-                    'yahoo' : YahooScavenger
+                    'yahoo' : YahooScavenger,
+                    'foursquare' : FoursquareScavenger
                   }
 
 EMAIL_QUEUE = "eta_queue"

@@ -23,12 +23,10 @@ class GithubScavenger(Scavenger):
   def process_job(self, job):
     email = job.body
     response = self._github(email)
-    return simplejson.dumps(
-                            { 'type' : GITHUB,
+    return simplejson.dumps({
+                              'type' : GITHUB,
                               'response' : response
-                            }
-                           )
-
+                            })
 
   def _github(self, email):
     response = http_request(email, "GET", GITHUB_HOST,

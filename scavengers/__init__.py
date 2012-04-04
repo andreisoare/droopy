@@ -5,3 +5,4 @@ from google_plus_scavenger import GooglePlusScavenger
 from jigsaw_scavenger import JigsawScavenger
 from myspace_scavenger import MyspaceScavenger
 from yahoo_scavenger import YahooScavenger
+from foursquare_scavenger import FoursquareScavenger

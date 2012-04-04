@@ -55,6 +55,11 @@ class SocialProfile(BaseDocument):
     'yahoo_status': int,
     'yahoo_link': unicode,
     'yahoo_parsed': dict,
+
+    # Data from Foursquare
+    'foursquare_status': int,
+    'foursquare_link': unicode,
+    'foursquare_parsed': dict,
   }
 
   required_fields = ['email', 'time']
@@ -66,6 +71,7 @@ class SocialProfile(BaseDocument):
     'jigsaw_status': 0,
     'myspace_status': 0,
     'yahoo_status': 0,
+    'foursquare_status': 0,
     'age': [],
     'profiles': [],
   }

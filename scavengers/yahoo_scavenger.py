@@ -19,11 +19,10 @@ class YahooScavenger(Scavenger):
   def process_job(self, job):
     email = job.body
     response = self._yahoo(email)
-    return simplejson.dumps(
-                            { 'type' : YAHOO,
+    return simplejson.dumps({
+                              'type' : YAHOO,
                               'response' : response
-                            }
-                           )
+                            })
 
   def _yahoo(self, email):
     username = email[0:email.find('@')]

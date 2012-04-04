@@ -19,11 +19,10 @@ class MyspaceScavenger(Scavenger):
   def process_job(self, job):
     email = job.body
     response = self._myspace(email)
-    return simplejson.dumps(
-                            { 'type' : MYSPACE,
+    return simplejson.dumps({
+                              'type' : MYSPACE,
                               'response' : response
-                            }
-                           )
+                            })
 
   def _myspace(self, email):
     params = {'searchTerms': email,

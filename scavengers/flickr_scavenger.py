@@ -20,11 +20,10 @@ class FlickrScavenger(Scavenger):
   def process_job(self, job):
     email = job.body
     response = self._flickr(email)
-    return simplejson.dumps(
-                            { 'type' : FLICKR,
+    return simplejson.dumps({
+                              'type' : FLICKR,
                               'response' : response
-                            }
-                           )
+                            })
 
   def _flickr(self, email):
     queries = {"email": "flickr.people.findByEmail",

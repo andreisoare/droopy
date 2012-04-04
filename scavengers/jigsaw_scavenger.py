@@ -19,11 +19,10 @@ class JigsawScavenger(Scavenger):
   def process_job(self, job):
     email = job.body
     response = self._jigsaw(email)
-    return simplejson.dumps(
-                            { 'type' : JIGSAW,
+    return simplejson.dumps({
+                              'type' : JIGSAW,
                               'response' : response
-                            }
-                           )
+                            })
 
   def _jigsaw(self, email):
     params = {"token": JIGSAW_KEY,
