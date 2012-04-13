@@ -1,11 +1,12 @@
 # Copyright 2012 Sunnytrail Insight Labs Inc. All rights reserved.
-# Author: mihai.tabara@gmail.com (Mihai Tabara)
+# Author: tabara.mihai@gmail.com (Mihai Tabara)
 #         diana.tiriplica@gmail.com (Diana-Victoria Tiriplica)
 
 import beanstalkc
 import thread
 import simplejson
 
+from networks_scouter import NetworkScouterScavenger
 from datetime import datetime
 from base.mongodb_utils import get_mongo_connection
 from mongodb.models import SocialProfile
@@ -118,6 +119,7 @@ class Router:
 
     social_profile.time = datetime.now()
     social_profile.save()
+
     self.test_profile_completion(social_profile)
 
   def test_profile_completion(self, social_profile):
@@ -130,6 +132,31 @@ class Router:
 
     if profile_complete is True:
       del self.processing_profiles[str(social_profile.email)]
+      self.test_usernames(social_profile)
+
+  def test_usernames(self, social_profile):
+    usernames = []
+    for key in scavengers_dict:
+      parsed = key + '_parsed'
+      parsed_dict = social_profile[parsed]
+      if 'username' in parsed_dict and \
+              usernames.count(parsed_dict['username']) == 0:
+        usernames.append(parsed_dict['username'])
+
+    for username in usernames:
+      ns = NetworkScouterScavenger(social_profile.email, username)
+      response_dict = ns.run()
+
+      for key, value in response_dict.items():
+        if value is True:
+          # add username to corresponding social network in social profile
+          if key in social_profile.networks:
+            social_profile.networks[key].append(username)
+          else:
+            social_profile.networks[key] = [username]
+
+    social_profile.time = datetime.now()
+    social_profile.save()
 
 if __name__=="__main__":
   r = Router()

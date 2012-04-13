@@ -18,6 +18,9 @@ class SocialProfile(BaseDocument):
     # Email address
     'email': unicode,
 
+    # Networks with usernames
+    'networks' : dict,
+
     # Personal data
     'age': [int, int],
     'location': unicode,
