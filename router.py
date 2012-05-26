@@ -132,7 +132,6 @@ class Router:
 
     if profile_complete is True:
       del self.processing_profiles[str(social_profile.email)]
-      self.test_usernames(social_profile)
 
   def test_usernames(self, social_profile):
     usernames = []

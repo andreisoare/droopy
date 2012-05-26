@@ -46,3 +46,4 @@ class Scavenger(Worker):
 
   def enqueue_result(self, result):
     self.out_queue.put(result)
+

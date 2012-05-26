@@ -2,8 +2,11 @@
 # Author: tabara.mihai@gmail.com (Mihai Tabara)
 
 import simplejson
+import urllib
 from scavengers.scavenger_utils import http_request, NOT_FOUND_ERROR_CODE
 from scavengers.scavenger_utils import OK_CODE
+
+#TODO(diana) file no longer needed
 
 class NetworkScouterScavenger:
   def __init__(self, email, username):
@@ -31,7 +34,7 @@ class NetworkScouterScavenger:
 
     params = {
                 "method" : "user.getinfo",
-                "user" : self.username,
+                "user" : urllib.quote(self.username),
                 "api_key" :  LASTFM_KEY,
                 "format" : "json"
              }
@@ -56,7 +59,7 @@ class NetworkScouterScavenger:
 
     params = {
                 "client_id" : SOUNDCLOUD_KEY,
-                "q" : self.username,
+                "q" : urllib.quote(self.username),
                 "limit" : SOUNDCLOUD_LIMIT
              }
 
@@ -75,7 +78,7 @@ class NetworkScouterScavenger:
 
   def twitter_scavenger(self):
     TWIITER_HOST = 'twitter.com'
-    TWITTER_PATH = '/%s' % (self.username)
+    TWITTER_PATH = '/%s' % (urllib.quote(self.username))
     params = {}
     response = http_request(self.email, 'HEAD', TWIITER_HOST, TWITTER_PATH, params)
 
@@ -83,31 +86,32 @@ class NetworkScouterScavenger:
 
   def aboutme_scavenger(self):
     ABOUTME_HOST = 'about.me'
-    ABOUTME_PATH = '/%s' % (self.username)
+    ABOUTME_PATH = '/%s' % (urllib.quote(self.username))
     params = {}
-    response = http_request(self.email, 'HEAD', ABOUTME_HOST, ABOUTME_PATH, params)
+    response = http_request(self.email, 'GET', ABOUTME_HOST, ABOUTME_PATH, params)
 
     if response['status'] != OK_CODE:
       return False
-
+    print response['raw_data']
     return True
 
   def pinterest_scavenger(self):
     PIN_HOST = 'pinterest.com'
-    PIN_PATH = '/%s/' % (self.username)
+    PIN_PATH = '/%s/' % (urllib.quote(self.username))
     params = {}
-    response = http_request(self.email, 'HEAD', PIN_HOST, PIN_PATH, params)
+    response = http_request(self.email, 'GET', PIN_HOST, PIN_PATH, params)
 
     if response['status'] != OK_CODE:
       return False
 
+    print response['raw_data']
     return True
 
-#if __name__=="__main__":
-#  email = 'camp101988@yahoo.com'
-#  username = '__mihaitabara__'
+if __name__=="__main__":
+  email = 'camp101988@yahoo.com'
+  username = '__mihaitabara__'
 
-#  ns = NetworkScouterScavenger(email, username)
-#  d = ns.run()
+  ns = NetworkScouterScavenger(email, 'dianatiriplica')
+  d = ns.run()
 #  for key, value in d.items():
 #    print key, value

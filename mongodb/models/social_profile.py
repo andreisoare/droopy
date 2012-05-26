@@ -19,7 +19,7 @@ class SocialProfile(BaseDocument):
     'email': unicode,
 
     # Networks with usernames
-    'networks' : dict,
+    'network_candidates' : dict,
 
     # Personal data
     'age': [int, int],
@@ -77,6 +77,7 @@ class SocialProfile(BaseDocument):
     'foursquare_status': 0,
     'age': [],
     'profiles': [],
+    'network_candidates': {},
   }
 
   indexes = [

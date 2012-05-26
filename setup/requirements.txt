@@ -6,3 +6,4 @@ pymongo
 ipython
 pyyaml
 yql
+beautifulsoup4

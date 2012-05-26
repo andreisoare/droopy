@@ -29,3 +29,8 @@ def get_mongo_connection(host=None, port=None):
   else:
     raise Exception('You need to configure the host and port '\
       'of the MongoDB document server')
+
+def get_mongo_collection(host=None, port=None):
+  conn = get_mongo_connection(host, port)
+  return conn.droopy.profiles
+
