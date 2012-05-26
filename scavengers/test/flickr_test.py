@@ -42,11 +42,11 @@ class FlickrTest(unittest.TestCase):
     job.delete()
 
     self.assertEqual(self.response['status'], OK_CODE)
-    self.assertEqual(self.response['email'], EMAIL_VALID)
-    self.assertEqual(self.response['username'], USERNAME)
-    self.assertEqual(self.response['display_name'], DISPLAY_NAME)
-    self.assertEqual(self.response['location'], LOCATION)
-    self.assertEqual(self.response['profiles'][0], PROFILE)
+    self.assertEqual(str(self.response['email']), EMAIL_VALID)
+    self.assertEqual(str(self.response['username']), USERNAME)
+    self.assertEqual(str(self.response['display_name']), DISPLAY_NAME)
+    self.assertEqual(str(self.response['location']), LOCATION)
+    self.assertEqual(str(self.response['profiles'][0]), PROFILE)
 
   def test_invalid(self):
     beanstalk = beanstalkc.Connection()
@@ -59,5 +59,5 @@ class FlickrTest(unittest.TestCase):
     job.delete()
 
     self.assertEqual(self.response['status'], NOT_FOUND_ERROR_CODE)
-    self.assertEqual(self.response['email'], EMAIL_INVALID)
+    self.assertEqual(str(self.response['email']), EMAIL_INVALID)
 

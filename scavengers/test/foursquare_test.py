@@ -25,8 +25,8 @@ EMAIL_VALID = "andrei.soare@gmail.com"
 EMAIL_INVALID = "asoare13@yahoo.com"
 DISPLAY_NAME = "Andrei Soare"
 GENDER = "male"
-LOCATION = "Weston, FL"
-PROFILE = "https://foursquare.com/user/4999608"
+LOCATION = "Vancouver, BC"
+PROFILE = "foursquare.com/user/4999608"
 
 class FoursquareTest(unittest.TestCase):
   def setUp(self):
@@ -44,11 +44,11 @@ class FoursquareTest(unittest.TestCase):
     job.delete()
 
     self.assertEqual(self.response['status'], OK_CODE)
-    self.assertEqual(self.response['email'], EMAIL_VALID)
-    self.assertEqual(self.response['display_name'], DISPLAY_NAME)
-    self.assertEqual(self.response['gender'], GENDER)
-    self.assertEqual(self.response['location'], LOCATION)
-    self.assertEqual(self.response['profiles'][0], PROFILE)
+    self.assertEqual(str(self.response['email']), EMAIL_VALID)
+    self.assertEqual(str(self.response['display_name']), DISPLAY_NAME)
+    self.assertEqual(str(self.response['gender']), GENDER)
+    self.assertEqual(str(self.response['location']), LOCATION)
+    self.assertEqual(str(self.response['profiles'][0]), PROFILE)
 
   def test_invalid(self):
     beanstalk = beanstalkc.Connection()
@@ -61,5 +61,5 @@ class FoursquareTest(unittest.TestCase):
     job.delete()
 
     self.assertEqual(self.response['status'], NOT_FOUND_ERROR_CODE)
-    self.assertEqual(self.response['email'], EMAIL_INVALID)
+    self.assertEqual(str(self.response['email']), EMAIL_INVALID)
 

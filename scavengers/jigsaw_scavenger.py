@@ -53,7 +53,8 @@ class JigsawResponse(Response):
 
     self['display_name'] = data['contacts'][0]['firstname'] + ' ' + \
                             data['contacts'][0]['lastname']
-    self['location'] = data['contacts'][0]['city'] + ' ' + \
-                        data['contacts'][0]['state']
+    #TODO(diana) maybe add address?
+    self['location'] = "%s, %s, %s" % (data['contacts'][0]['city'],
+              data['contacts'][0]['state'], data['contacts'][0]['country'])
     self['profiles'] = [data['contacts'][0]['contactURL']]
 

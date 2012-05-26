@@ -2,19 +2,16 @@
 # Author: diana.tiriplica@gmail.com (Diana-Victoria Tiriplica)
 #
 # This scavenger gets information about a user from Github.
-#
-# WARN (diana) This API is deprecated. Migrate to v3 when it will support
-# search by email.
 
 import simplejson
+import httplib
 from scavenger import Scavenger
 from response import Response
 from scavenger_utils import http_request
-from xml.dom import minidom
 
 GITHUB = "github"
-GITHUB_HOST = "github.com"
-GITHUB_PATH = "/api/v2/xml/user/email/"
+GITHUB_HOST = "api.github.com"
+GITHUB_PATH = "/legacy/user/email/"
 
 class GithubScavenger(Scavenger):
   def __init__(self, proc_id, in_tube, out_tube):
@@ -30,7 +27,7 @@ class GithubScavenger(Scavenger):
 
   def _github(self, email):
     response = http_request(email, "GET", GITHUB_HOST,
-               "%s%s" % (GITHUB_PATH, email), {})
+               "%s%s" % (GITHUB_PATH, email), {}, httplib.HTTPS_PORT)
 
     if response.is_error():
       return response
@@ -42,24 +39,12 @@ class GithubResponse(Response):
     super(GithubResponse, self).__init__(response['status'],
                           response['raw_data'], response['email'])
 
-    dom = minidom.parseString(self['raw_data'])
-    info = dom.getElementsByTagName("user")[0]
 
-    self['display_name'] = self._get_info(info, "name")
-    self['location'] = self._get_info(info, "location")
-    self['profiles'] = [GITHUB_HOST + "/" + self._get_info(info, "login")]
-    if len(self._get_info(info, "blog")):
-      self['profiles'].append(self._get_info(info, "blog"))
-    self['username'] = self._get_info(info, "login")
-
-  def _get_info(self, info, parameter):
-    elem = info.getElementsByTagName(parameter)[0]
-    return self._get_text(elem.childNodes)
-
-  def _get_text(self, nodelist):
-    rc = []
-    for node in nodelist:
-      if node.nodeType == node.TEXT_NODE:
-        rc.append(node.data)
-    return ''.join(rc)
+    info = simplejson.loads(response['raw_data'])['user']
+    self['display_name'] = info['name']
+    self['location'] = info['location']
+    self['profiles'] = ["github.com/" + info['login']]
+    if 'blog' in info and len(info['blog']):
+      self['profiles'].append(info['blog'])
+    self['username'] = info['login']
 

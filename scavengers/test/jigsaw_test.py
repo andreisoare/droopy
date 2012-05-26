@@ -22,7 +22,7 @@ TIMEOUT = 5
 EMAIL_VALID = "asadat@salesforce.com"
 EMAIL_INVALID = "tabara.mihai@gmail.com"
 DISPLAY_NAME = "Ali Sadat"
-LOCATION = "San Francisco CA"
+LOCATION = "San Francisco, CA, United States"
 PROFILE = "http://www.jigsaw.com/BC.xhtml?contactId=45003056"
 
 class JigsawTest(unittest.TestCase):
@@ -41,10 +41,10 @@ class JigsawTest(unittest.TestCase):
     job.delete()
 
     self.assertEqual(self.response['status'], OK_CODE)
-    self.assertEqual(self.response['email'], EMAIL_VALID)
-    self.assertEqual(self.response['display_name'], DISPLAY_NAME)
-    self.assertEqual(self.response['location'], LOCATION)
-    self.assertEqual(self.response['profiles'][0], PROFILE)
+    self.assertEqual(str(self.response['email']), EMAIL_VALID)
+    self.assertEqual(str(self.response['display_name']), DISPLAY_NAME)
+    self.assertEqual(str(self.response['location']), LOCATION)
+    self.assertEqual(str(self.response['profiles'][0]), PROFILE)
 
   def test_invalid(self):
     beanstalk = beanstalkc.Connection()
@@ -57,5 +57,5 @@ class JigsawTest(unittest.TestCase):
     job.delete()
 
     self.assertEqual(self.response['status'], NOT_FOUND_ERROR_CODE)
-    self.assertEqual(self.response['email'], EMAIL_INVALID)
+    self.assertEqual(str(self.response['email']), EMAIL_INVALID)
 
