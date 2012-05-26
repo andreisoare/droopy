@@ -13,7 +13,7 @@ from twitter_scavenger import TwitterScavenger
 from aboutme_scavenger import AboutmeScavenger
 from pinterest_scavenger import PinterestScavenger
 from linkedin_scavenger import LinkedinScavenger
-from base.mongodb_utils import get_mongo_connection
+from base.mongodb_utils import get_mongo_collection
 from datetime import datetime
 
 networks = {
@@ -26,15 +26,13 @@ networks = {
           }
 
 if __name__=="__main__":
-  conn = get_mongo_connection()
-  profiles = conn.droopy.profiles
-
-  print 'ahahahaha'
+  profiles = get_mongo_collection()
 
   social_profile = profiles.SocialProfile()
   jsn = {}
   jsn['email'] = 'andrei.soare@gmail.com'
   jsn['username'] = 'andreisoare'
+  jsn['collection'] = 'test'
   social_profile['email'] = unicode(jsn['email'])
   social_profile['time'] = datetime.now()
   social_profile.save()

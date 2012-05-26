@@ -9,7 +9,7 @@ from pymongo.objectid import ObjectId
 
 from scavenger import Scavenger
 from response import Response
-from scavenger_utils import http_request
+from scavenger_utils import http_request, NOT_FOUND_ERROR_CODE
 from base.mongodb_utils import get_mongo_collection
 
 SOUNDCLOUD = 'soundcloud'
@@ -21,23 +21,25 @@ SOUNDCLOUD_LIMIT = 10
 class SoundcloudScavenger(Scavenger):
   def __init__(self, proc_id, in_tube, out_tube):
     super(SoundcloudScavenger, self).__init__(proc_id, in_tube, out_tube)
-    self.profiles = get_mongo_collection()
 
   def process_job(self, job):
     info = simplejson.loads(job.body)
     email = info['email']
     username = info['username']
     response = self._soundcloud(username, email)
+    if response.is_error():
+      return 'not'
 
-    profile = self.profiles.find_one({"_id" : ObjectId(info['id'])})
+    profiles = get_mongo_collection(info['collection'])
+    profile = profiles.find_one({"_id" : ObjectId(info['id'])})
     try:
       profile['network_candidates'][SOUNDCLOUD].append(response)
     except:
       profile['network_candidates'][SOUNDCLOUD] = [response]
-    self.profiles.save(profile)
+    profiles.save(profile)
 
     #TODO(diana) what to return
-    return ''
+    return 'ok'
     return simplejson.dumps({
                               'type' : SOUNDCLOUD,
                               'response' : response
@@ -70,10 +72,13 @@ class SoundcloudResponse(Response):
                           response['raw_data'], response['email'])
 
     users_list = simplejson.loads(response['raw_data'])
+    found = False
     for info in users_list:
       if info['permalink'] != username:
         continue
 
+      found = True
+      self['username'] = username
       self['raw_data'] = info
       self['display_name'] = info['full_name']
       self['location'] = "%s %s" % (info['city'], info['country'])
@@ -81,4 +86,7 @@ class SoundcloudResponse(Response):
       if info['website']:
         self['profiles'].append(info['website'])
       break
+
+    if not found:
+      self['status'] = NOT_FOUND_ERROR_CODE
 

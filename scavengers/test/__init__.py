@@ -5,3 +5,9 @@ from yahoo_test import YahooTest
 from myspace_test import MyspaceTest
 from jigsaw_test import JigsawTest
 from foursquare_test import FoursquareTest
+from pinterest_test import PinterestTest
+from twitter_test import TwitterTest
+from linkedin_test import LinkedinTest
+from lastfm_test import LastfmTest
+from aboutme_test import AboutmeTest
+from soundcloud_test import SoundcloudTest

@@ -19,23 +19,25 @@ PINTEREST_HOST = 'pinterest.com'
 class PinterestScavenger(Scavenger):
   def __init__(self, proc_id, in_tube, out_tube):
     super(PinterestScavenger, self).__init__(proc_id, in_tube, out_tube)
-    self.profiles = get_mongo_collection()
 
   def process_job(self, job):
     info = simplejson.loads(job.body)
     email = info['email']
     username = info['username']
     response = self._pinterest(username, email)
+    if response.is_error():
+      return 'not'
 
-    profile = self.profiles.find_one({"_id" : ObjectId(info['id'])})
+    profiles = get_mongo_collection(info['collection'])
+    profile = profiles.find_one({"_id" : ObjectId(info['id'])})
     try:
       profile['network_candidates'][PINTEREST].append(response)
     except:
       profile['network_candidates'][PINTEREST] = [response]
-    self.profiles.save(profile)
+    profiles.save(profile)
 
     #TODO(diana) what to return
-    return ''
+    return 'ok'
     return simplejson.dumps({
                               'type' : PINTEREST,
                               'response' : response

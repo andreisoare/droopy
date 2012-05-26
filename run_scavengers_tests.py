@@ -11,6 +11,12 @@ from scavengers.test import GooglePlusTest
 from scavengers.test import YahooTest
 from scavengers.test import MyspaceTest
 from scavengers.test import JigsawTest
-from scavengers.test import FoursquareTest
+
+from scavengers.test import PinterestTest
+from scavengers.test import TwitterTest
+from scavengers.test import LinkedinTest
+from scavengers.test import LastfmTest
+from scavengers.test import AboutmeTest
+from scavengers.test import SoundcloudTest
 
 unittest.main()

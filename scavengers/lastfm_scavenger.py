@@ -9,7 +9,7 @@ from pymongo.objectid import ObjectId
 
 from scavenger import Scavenger
 from response import Response
-from scavenger_utils import http_request
+from scavenger_utils import http_request, NOT_FOUND_ERROR_CODE
 from base.mongodb_utils import get_mongo_collection
 
 LASTFM = "lastfm"
@@ -20,23 +20,25 @@ LASTFM_PATH = '/2.0/'
 class LastfmScavenger(Scavenger):
   def __init__(self, proc_id, in_tube, out_tube):
     super(LastfmScavenger, self).__init__(proc_id, in_tube, out_tube)
-    self.profiles = get_mongo_collection()
 
   def process_job(self, job):
     info = simplejson.loads(job.body)
     email = info['email']
     username = info['username']
     response = self._lastfm(username, email)
+    if response.is_error():
+      return 'not'
 
-    profile = self.profiles.find_one({"_id" : ObjectId(info['id'])})
+    profiles = get_mongo_collection(info['collection'])
+    profile = profiles.find_one({"_id" : ObjectId(info['id'])})
     try:
       profile['network_candidates'][LASTFM].append(response)
     except:
       profile['network_candidates'][LASTFM] = [response]
-    self.profiles.save(profile)
+    profiles.save(profile)
 
     #TODO(diana) what to return
-    return ''
+    return 'ok'
     return simplejson.dumps({
                               'type' : LASTFM,
                               'response' : response

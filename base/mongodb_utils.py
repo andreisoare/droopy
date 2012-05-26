@@ -4,6 +4,7 @@
 # Database related utilities.
 
 import global_settings
+import pymongo
 from mongokit import Connection
 
 from mongodb.models import SocialProfile
@@ -30,7 +31,8 @@ def get_mongo_connection(host=None, port=None):
     raise Exception('You need to configure the host and port '\
       'of the MongoDB document server')
 
-def get_mongo_collection(host=None, port=None):
+def get_mongo_collection(collection='profiles', database='droopy', host=None, port=None):
   conn = get_mongo_connection(host, port)
-  return conn.droopy.profiles
+  db = conn[database]
+  return db[collection]
 

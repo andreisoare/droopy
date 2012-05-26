@@ -10,7 +10,7 @@ from pymongo.objectid import ObjectId
 from bs4 import BeautifulSoup
 from scavenger import Scavenger
 from response import Response
-from scavenger_utils import http_request
+from scavenger_utils import http_request, NOT_FOUND_ERROR_CODE
 from base.mongodb_utils import get_mongo_collection
 
 #TODO(diana) check for facebook, twitter etc buttons
@@ -21,23 +21,25 @@ ABOUTME_HOST = 'about.me'
 class AboutmeScavenger(Scavenger):
   def __init__(self, proc_id, in_tube, out_tube):
     super(AboutmeScavenger, self).__init__(proc_id, in_tube, out_tube)
-    self.profiles = get_mongo_collection()
 
   def process_job(self, job):
     info = simplejson.loads(job.body)
     email = info['email']
     username = info['username']
     response = self._aboutme(username, email)
+    if response.is_error():
+      return 'not'
 
-    profile = self.profiles.find_one({"_id" : ObjectId(info['id'])})
+    profiles = get_mongo_collection(info['collection'])
+    profile = profiles.find_one({"_id" : ObjectId(info['id'])})
     try:
       profile['network_candidates'][ABOUTME].append(response)
     except:
       profile['network_candidates'][ABOUTME] = [response]
-    self.profiles.save(profile)
+    profiles.save(profile)
 
     #TODO(diana) what to return
-    return ''
+    return 'ok'
     return simplejson.dumps({
                               'type' : ABOUTME,
                               'response' : response
@@ -47,7 +49,8 @@ class AboutmeScavenger(Scavenger):
     params = {}
     response = http_request(email, 'GET',
                           ABOUTME_HOST, "/%s" % urllib.quote(username), params)
-    if response.is_error():
+    if '302 Found' in response['raw_data']:
+      response['status'] = NOT_FOUND_ERROR_CODE
       return response
 
     return AboutmeResponse(response, username)
