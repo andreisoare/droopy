@@ -39,6 +39,9 @@ class FoursquareScavenger(Scavenger):
     response = http_request(email, "GET", FOURSQUARE_HOST, FOURSQUARE_PATH,
                                                     params, httplib.HTTPS_PORT)
 
+    if response.is_error() or len(response['raw_data']) == 0:
+      response['status'] = NOT_FOUND_ERROR_CODE
+      return response
     data = simplejson.loads(response['raw_data'])['response']['results']
     if len(data) is 0:
       response['status'] = NOT_FOUND_ERROR_CODE
