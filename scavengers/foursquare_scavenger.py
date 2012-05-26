@@ -56,5 +56,8 @@ class FoursquareResponse(Response):
     self['display_name'] = "%s %s" % (info['firstName'], info['lastName'])
     self['gender'] = info['gender']
     self['location'] = info['homeCity']
-    self['profiles'] = [info['canonicalUrl']]
+    self['profiles'] = ['foursquare.com/user/' + info['id']]
+    #TODO(diana) check contact field
+    if 'bio' in info:
+      self['profiles'].append(info['bio'])
 
