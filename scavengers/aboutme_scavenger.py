@@ -13,10 +13,12 @@ from response import Response
 from scavenger_utils import http_request, NOT_FOUND_ERROR_CODE
 from base.mongodb_utils import get_mongo_collection
 
-#TODO(diana) check for facebook, twitter etc buttons
+#TODO(diana) check if there are more buttons in CONTENT
 
 ABOUTME = 'aboutme'
 ABOUTME_HOST = 'about.me'
+ABOUTME_CONTENT = ['twitter', 'facebook', 'googleplus', 'linkedin', 'tumblr',
+                    'foursquare']
 
 class AboutmeScavenger(Scavenger):
   def __init__(self, proc_id, in_tube, out_tube):
@@ -63,3 +65,15 @@ class AboutmeResponse(Response):
     self['profiles'] = [ABOUTME_HOST + "/" + username]
     self['username'] = username
     self['display_name'] = data.find(id='profile_box').div.h1.string
+
+    for content in ABOUTME_CONTENT:
+      content_response = http_request(self['email'], 'GET', ABOUTME_HOST,
+                      "/content/%s/%s" % (urllib.quote(username), content), {})
+      data = BeautifulSoup(content_response['raw_data'])
+      body = data.find('body', {'class':'aboutmeapp'})
+      try:
+        profile = body.find('div', {'class':'top_section'}).h1.a.get('href')
+        if len(profile):
+          self['profiles'].append(profile)
+      except:
+        pass
