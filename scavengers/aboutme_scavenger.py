@@ -18,7 +18,7 @@ from base.mongodb_utils import get_mongo_collection
 ABOUTME = 'aboutme'
 ABOUTME_HOST = 'about.me'
 ABOUTME_CONTENT = ['twitter', 'facebook', 'googleplus', 'linkedin', 'tumblr',
-                    'foursquare']
+                    'foursquare', 'wordpress', 'flickr', 'vimeo', 'youtube']
 
 class AboutmeScavenger(Scavenger):
   def __init__(self, proc_id, in_tube, out_tube):
@@ -66,6 +66,9 @@ class AboutmeResponse(Response):
     self['username'] = username
     self['display_name'] = data.find(id='profile_box').div.h1.string
 
+    for website in data.find_all('a', {'class': 'website'}):
+      self['profiles'].append(website.get('href'))
+
     for content in ABOUTME_CONTENT:
       content_response = http_request(self['email'], 'GET', ABOUTME_HOST,
                       "/content/%s/%s" % (urllib.quote(username), content), {})
@@ -77,3 +80,4 @@ class AboutmeResponse(Response):
           self['profiles'].append(profile)
       except:
         pass
+

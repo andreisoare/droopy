@@ -61,6 +61,10 @@ class FoursquareResponse(Response):
     self['location'] = info['homeCity']
     self['profiles'] = ['foursquare.com/user/' + info['id']]
     #TODO(diana) check contact field
-    if 'bio' in info:
+    if 'facebook' in info['contact']:
+      self['profiles'].append("facebook.com/profile.php?id=%s" % info['contact']['facebook'])
+    if 'twitter' in info['contact']:
+      self['profiles'].append("twitter.com/%s" % info['contact']['twitter'])
+    if 'bio' in info and info['bio']:
       self['profiles'].append(info['bio'])
 
