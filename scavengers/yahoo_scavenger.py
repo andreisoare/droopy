@@ -3,14 +3,13 @@
 
 import yql
 import simplejson
+
 from response import Response
 from scavenger import Scavenger
+from scavenger_config import YAHOO_KEY, YAHOO_PWD
 from scavenger_utils import NOT_FOUND_ERROR_CODE, OK_CODE
 
 YAHOO = "yahoo"
-YAHOO_KEY = "dj0yJmk9WHBlY2dOVGNjdmtMJmQ9WVdrOVQyUmFPWE5TTm5FbWNHbzl" \
-              "NVFl5TlRnNE9EUTJNZy0tJnM9Y29uc3VtZXJzZWNyZXQmeD0wNg--"
-YAHOO_PWD = '4e76035fb8fc87922616b04917e2cafeda0b3c0a'
 
 class YahooScavenger(Scavenger):
   def __init__(self, proc_id, in_tube, out_tube):

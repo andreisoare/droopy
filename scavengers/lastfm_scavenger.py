@@ -8,12 +8,12 @@ import urllib
 from pymongo.objectid import ObjectId
 
 from scavenger import Scavenger
+from scavenger_config import LASTFM_KEY
 from response import Response
 from scavenger_utils import http_request, NOT_FOUND_ERROR_CODE
 from base.mongodb_utils import get_mongo_collection
 
 LASTFM = "lastfm"
-LASTFM_KEY = 'e5c40cb75a092823db9378c1437c3ec0'
 LASTFM_HOST = 'ws.audioscrobbler.com'
 LASTFM_PATH = '/2.0/'
 

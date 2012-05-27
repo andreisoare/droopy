@@ -5,13 +5,14 @@
 import beanstalkc
 import thread
 import simplejson
+from datetime import datetime
 
 from networks_scouter import NetworkScouterScavenger
-from datetime import datetime
-from base.mongodb_utils import get_mongo_connection
+from base.mongodb_utils import get_mongo_collection
 from mongodb.models import SocialProfile
 from scavengers import FlickrScavenger, GithubScavenger, GooglePlusScavenger, \
           JigsawScavenger, MyspaceScavenger, YahooScavenger, FoursquareScavenger
+from scavengers.scavenger_config import MONGO_COLLECTION
 
 scavengers_dict = {
                     'flickr' : FlickrScavenger,
@@ -36,8 +37,7 @@ class Router:
     self.response_beanstalk.watch(RESPONSE_QUEUE)
     thread.start_new_thread(self.watch_responses, ())
 
-    conn = get_mongo_connection()
-    self.profiles = conn.droopy.profiles
+    self.profiles = get_mongo_collection(MONGO_COLLECTION)
 
     for key in scavengers_dict:
       scavenger = scavengers_dict[key](key, key + '_in', RESPONSE_QUEUE)

@@ -8,13 +8,13 @@ import httplib
 import datetime
 
 from scavenger import Scavenger
+from scavenger_config import FOURSQUARE_OAUTH
 from response import Response
 from scavenger_utils import http_request, NOT_FOUND_ERROR_CODE
 
 FOURSQUARE = "foursquare"
 FOURSQUARE_HOST = "api.foursquare.com"
 FOURSQUARE_PATH = "/v2/users/search"
-OAUTH = '1BRZVFUP3JAHHMYCTYPTQGX31UM3AHASNEHGHCTLBRDJAN2Y'
 
 class FoursquareScavenger(Scavenger):
   def __init__(self, proc_id, in_tube, out_tube):
@@ -33,7 +33,7 @@ class FoursquareScavenger(Scavenger):
     v = "%d%d%d" % (today.year, today.month, today.day)
     params = {
               'email': email,
-              'oauth_token': OAUTH,
+              'oauth_token': FOURSQUARE_OAUTH,
               'v': v,
              }
     response = http_request(email, "GET", FOURSQUARE_HOST, FOURSQUARE_PATH,

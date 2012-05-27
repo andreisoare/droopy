@@ -8,6 +8,7 @@ import re
 import simplejson
 import httplib
 from scavenger import Scavenger
+from scavenger_config import GOOGLE_PLUS_KEY
 from response import Response
 from scavenger_utils import http_request
 
@@ -15,7 +16,6 @@ GOOGLE_PLUS = "google_plus"
 PICASA_HOST = "picasaweb.google.com"
 GOOGLE_HOST = "www.googleapis.com"
 GOOGLE_PLUS_PATH = "/plus/v1/people/"
-GOOGLE_PLUS_KEY = "AIzaSyACfowiWrJPaxS5EFvI6-N07CjctMdIqhE"
 INFO_MATCH = "var _user"
 
 class GooglePlusScavenger(Scavenger):

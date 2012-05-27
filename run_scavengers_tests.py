@@ -5,6 +5,7 @@
 
 import unittest
 
+# Email scavengers tests
 from scavengers.test import FlickrTest
 from scavengers.test import GithubTest
 from scavengers.test import GooglePlusTest
@@ -12,6 +13,7 @@ from scavengers.test import YahooTest
 from scavengers.test import MyspaceTest
 from scavengers.test import JigsawTest
 
+# Username scavengers tests
 from scavengers.test import PinterestTest
 from scavengers.test import TwitterTest
 from scavengers.test import LinkedinTest

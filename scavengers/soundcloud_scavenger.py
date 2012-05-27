@@ -8,12 +8,12 @@ import urllib
 from pymongo.objectid import ObjectId
 
 from scavenger import Scavenger
+from scavenger_config import SOUNDCLOUD_KEY
 from response import Response
 from scavenger_utils import http_request, NOT_FOUND_ERROR_CODE
 from base.mongodb_utils import get_mongo_collection
 
 SOUNDCLOUD = 'soundcloud'
-SOUNDCLOUD_KEY = 'ef463fabfe015083c72515e72bde117f'
 SOUNDCLOUD_HOST = 'api.soundcloud.com'
 SOUNDCLOUD_PATH = '/users.json'
 SOUNDCLOUD_LIMIT = 10

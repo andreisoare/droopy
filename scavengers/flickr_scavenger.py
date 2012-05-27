@@ -3,14 +3,13 @@
 
 import simplejson
 from scavenger import Scavenger
+from scavenger_config import FLICKR_KEY, FLICKR_PWD
 from scavenger_utils import http_request, NOT_FOUND_ERROR_CODE
 from response import Response
 
 FLICKR = 'flickr'
 FLICKR_HOST = "api.flickr.com"
 FLICKR_PATH = "/services/rest/"
-FLICKR_KEY = 'd75138bb5caa8f70bb5b3dc071e19e6e'
-FLICKR_PWD = '1e7edafa40c76873'
 RESPONSE_PREFIX_LENGTH = 14
 
 class FlickrScavenger(Scavenger):

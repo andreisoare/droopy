@@ -2,15 +2,16 @@
 # Author: tabara.mihai@gmail.com (Mihai Tabara)
 
 import simplejson
-from scavenger_utils import http_request, NOT_FOUND_ERROR_CODE
-from scavenger import Scavenger
-from response import Response
 import httplib
+
+from scavenger import Scavenger
+from scavenger_config import JIGSAW_KEY
+from scavenger_utils import http_request, NOT_FOUND_ERROR_CODE
+from response import Response
 
 JIGSAW = "jigsaw"
 JIGSAW_HOST = "www.jigsaw.com"
 JIGSAW_PATH = "/rest/searchContact.json"
-JIGSAW_KEY = 'rgr5hkhww2dfgcgarrj66baa'
 
 class JigsawScavenger(Scavenger):
   def __init__(self, proc_id, in_tube, out_tube):
