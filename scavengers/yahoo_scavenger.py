@@ -25,6 +25,17 @@ class YahooScavenger(Scavenger):
 
   def _yahoo(self, email):
     username = email[0:email.find('@')]
+    host = email[email.find('@')+1:]
+
+    domains = ['yahoo', 'ymail', 'rocketmail']
+    for domain in domains:
+      to_check = True if host.find(domain) >= 0 else False
+      if to_check is True:
+        break
+
+    if to_check is False:
+      return Response(NOT_FOUND_ERROR_CODE, 'Email address not matching yahoo \
+                                     standard\'s naming policies', email)
 
     y = yql.TwoLegged(YAHOO_KEY, YAHOO_PWD)
     yql_object = y.execute("select * from social.profile where guid in \

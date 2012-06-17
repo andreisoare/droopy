@@ -10,7 +10,7 @@ import httplib
 from scavenger import Scavenger
 from scavenger_config import GOOGLE_PLUS_KEY
 from response import Response
-from scavenger_utils import http_request, format_url
+from scavenger_utils import http_request, format_url, NOT_FOUND_ERROR_CODE
 
 GOOGLE_PLUS = "google_plus"
 PICASA_HOST = "picasaweb.google.com"
@@ -31,7 +31,19 @@ class GooglePlusScavenger(Scavenger):
                             })
 
   def _google_plus(self, email):
-    username = email[:email.find("@gmail.com")]
+    username = email[0:email.find('@')]
+    host = email[email.find('@')+1:]
+
+    domains = ['gmail', 'google']
+    for domain in domains:
+      to_check = True if host.find(domain) >= 0 else False
+      if to_check is True:
+        break
+
+    if to_check is False:
+      return Response(NOT_FOUND_ERROR_CODE, 'Email address not matching \
+                              Google\'s email naming policies', email)
+
     response = http_request(email, "GET", PICASA_HOST, "/%s" % username, {})
 
     if response.is_error():
