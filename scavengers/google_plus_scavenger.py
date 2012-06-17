@@ -10,7 +10,7 @@ import httplib
 from scavenger import Scavenger
 from scavenger_config import GOOGLE_PLUS_KEY
 from response import Response
-from scavenger_utils import http_request
+from scavenger_utils import http_request, format_url
 
 GOOGLE_PLUS = "google_plus"
 PICASA_HOST = "picasaweb.google.com"
@@ -73,8 +73,9 @@ class GooglePlusResponse(Response):
     for url in info['urls']:
       if 'type' in url.keys():
         if url['type'] == "profile":
-          self['profiles'].insert(0, url['value'])
+          self['profiles'].insert(0, format_url(url['value']))
         else:
           continue
-      self['profiles'].append(url['value'])
+      else:
+        self['profiles'].append(format_url(url['value']))
 

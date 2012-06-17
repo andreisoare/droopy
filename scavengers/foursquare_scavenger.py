@@ -10,7 +10,7 @@ import datetime
 from scavenger import Scavenger
 from scavenger_config import FOURSQUARE_OAUTH
 from response import Response
-from scavenger_utils import http_request, NOT_FOUND_ERROR_CODE
+from scavenger_utils import http_request, NOT_FOUND_ERROR_CODE, format_url
 
 FOURSQUARE = "foursquare"
 FOURSQUARE_HOST = "api.foursquare.com"
@@ -66,5 +66,5 @@ class FoursquareResponse(Response):
     if 'twitter' in info['contact']:
       self['profiles'].append("twitter.com/%s" % info['contact']['twitter'])
     if 'bio' in info and info['bio']:
-      self['profiles'].append(info['bio'])
+      self['profiles'].append(format_url(info['bio']))
 

@@ -9,5 +9,5 @@ if __name__=="__main__":
   bs.put('camp101988@yahoo.com')
 #  bs.put('tabara.mihai@gmail.com')
 #  bs.put('dia_tiriplica@yahoo.co.uk')
-#  bs.put('andrei.soare@gmail.com')
+  #bs.put('andrei.soare@gmail.com')
 

@@ -10,7 +10,7 @@ from pymongo.objectid import ObjectId
 from bs4 import BeautifulSoup
 from scavenger import Scavenger
 from response import Response
-from scavenger_utils import http_request
+from scavenger_utils import http_request, format_url
 from base.mongodb_utils import get_mongo_collection
 
 LINKEDIN = 'linkedin'
@@ -68,5 +68,8 @@ class LinkedinResponse(Response):
     self['location'] = \
                 headline.find('span', {'class' : 'locality'}).get_text().strip()
 
-    self['profiles'] = [LINKEDIN_HOST + "/" + username]
+    other_profiles = [LINKEDIN_HOST + "/" + username]
+    for profile_url in other_profiles:
+      self['profiles'].append(format_url(profile_url))
+
     self['username'] = username

@@ -10,7 +10,7 @@ from pymongo.objectid import ObjectId
 from scavenger import Scavenger
 from scavenger_config import SOUNDCLOUD_KEY
 from response import Response
-from scavenger_utils import http_request, NOT_FOUND_ERROR_CODE
+from scavenger_utils import http_request, NOT_FOUND_ERROR_CODE, format_url
 from base.mongodb_utils import get_mongo_collection
 
 SOUNDCLOUD = 'soundcloud'
@@ -82,9 +82,11 @@ class SoundcloudResponse(Response):
       self['raw_data'] = info
       self['display_name'] = info['full_name']
       self['location'] = "%s %s" % (info['city'], info['country'])
-      self['profiles'] = [info['permalink_url']]
+      other_profiles = [info['permalink_url']]
+      for profile_url in other_profiles:
+        self['profiles'].append(format_url(profile_url))
       if info['website']:
-        self['profiles'].append(info['website'])
+        self['profiles'].append(format_url(info['website']))
       break
 
     if not found:

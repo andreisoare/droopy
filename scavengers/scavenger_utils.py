@@ -20,3 +20,10 @@ def http_request(email, method, host, service, params, port=HTTP_PORT):
     return Response(response.status, response.read(), email)
   except:
     return Response(DROOPY_ERROR_CODE, '', email)
+
+def format_url(url):
+  url = url.replace('https://', '')
+  url = url.replace('http://', '')
+  url = url.replace('www.', '')
+
+  return url

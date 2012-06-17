@@ -4,7 +4,7 @@
 import simplejson
 from scavenger import Scavenger
 from scavenger_config import FLICKR_KEY, FLICKR_PWD
-from scavenger_utils import http_request, NOT_FOUND_ERROR_CODE
+from scavenger_utils import http_request, NOT_FOUND_ERROR_CODE, format_url
 from response import Response
 
 FLICKR = 'flickr'
@@ -72,5 +72,10 @@ class FlickrResponse(Response):
     self['username'] = data['person']['username']['_content']
     self['display_name'] = data['person']['realname']['_content']
     self['location'] = data['person']['location']['_content']
-    self['profiles'] = [data['person']['profileurl']['_content']]
+
+    other_profiles = [data['person']['profileurl']['_content']]
+    self['profiles'] = []
+
+    for profile_url in other_profiles:
+      self['profiles'].append(format_url(profile_url))
 

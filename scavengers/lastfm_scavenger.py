@@ -10,7 +10,7 @@ from pymongo.objectid import ObjectId
 from scavenger import Scavenger
 from scavenger_config import LASTFM_KEY
 from response import Response
-from scavenger_utils import http_request, NOT_FOUND_ERROR_CODE
+from scavenger_utils import http_request, NOT_FOUND_ERROR_CODE, format_url
 from base.mongodb_utils import get_mongo_collection
 
 LASTFM = "lastfm"
@@ -75,5 +75,8 @@ class LastfmResponse(Response):
     self['location'] = info['country']
     self['age'] = info['age']
     self['gender'] = info['gender']
-    self['profiles'] = [info['url']]
+    other_profiles = [info['url']]
+    for profile_url in other_profiles:
+      self['profiles'].append(format_url(profile_url))
+
     self['username'] = info['name']

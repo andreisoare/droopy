@@ -7,7 +7,7 @@ import simplejson
 import httplib
 from scavenger import Scavenger
 from response import Response
-from scavenger_utils import http_request
+from scavenger_utils import http_request, format_url
 
 GITHUB = "github"
 GITHUB_HOST = "api.github.com"
@@ -45,6 +45,6 @@ class GithubResponse(Response):
     self['location'] = info['location']
     self['profiles'] = ["github.com/" + info['login']]
     if 'blog' in info and len(info['blog']):
-      self['profiles'].append(info['blog'])
+      self['profiles'].append(format_url(info['blog']))
     self['username'] = info['login']
 

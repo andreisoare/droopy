@@ -6,7 +6,7 @@
 import simplejson
 from scavenger import Scavenger
 from response import Response
-from scavenger_utils import http_request
+from scavenger_utils import http_request, format_url
 
 MYSPACE = "myspace"
 MYSPACE_HOST = "api.myspace.com"
@@ -48,5 +48,6 @@ class MyspaceResponse(Response):
     self['gender'] = info['gender']
     self['age'] = info['age']
     self['location'] = info['location']
-    self['profiles'] = [info['profileUrl']]
-
+    other_profiles = [info['profileUrl']]
+    for profile_url in other_profiles:
+      self['profiles'].append(format_url(profile_url))

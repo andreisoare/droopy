@@ -6,7 +6,7 @@ import httplib
 
 from scavenger import Scavenger
 from scavenger_config import JIGSAW_KEY
-from scavenger_utils import http_request, NOT_FOUND_ERROR_CODE
+from scavenger_utils import http_request, NOT_FOUND_ERROR_CODE, format_url
 from response import Response
 
 JIGSAW = "jigsaw"
@@ -57,5 +57,7 @@ class JigsawResponse(Response):
     #TODO(diana) maybe add address?
     self['location'] = "%s, %s, %s" % (data['contacts'][0]['city'],
               data['contacts'][0]['state'], data['contacts'][0]['country'])
-    self['profiles'] = [data['contacts'][0]['contactURL']]
+    other_profiles = [data['contacts'][0]['contactURL']]
+    for profile_url in other_profiles:
+      self['profiles'].append(format_url(profile_url))
 

@@ -10,7 +10,7 @@ from pymongo.objectid import ObjectId
 from bs4 import BeautifulSoup
 from scavenger import Scavenger
 from response import Response
-from scavenger_utils import http_request
+from scavenger_utils import http_request, format_url
 from base.mongodb_utils import get_mongo_collection
 
 TWITTER = 'twitter'
@@ -68,5 +68,5 @@ class TwitterResponse(Response):
       elif spans[0].string == 'Location':
         self['location'] = spans[1].string
       elif spans[0].string == 'Web':
-        self['profiles'].append(x.a.get('href'))
+        self['profiles'].append(format_url(x.a.get('href')))
 

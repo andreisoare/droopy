@@ -10,7 +10,7 @@ from pymongo.objectid import ObjectId
 from bs4 import BeautifulSoup
 from scavenger import Scavenger
 from response import Response
-from scavenger_utils import http_request
+from scavenger_utils import http_request, format_url
 from base.mongodb_utils import get_mongo_collection
 
 PINTEREST = 'pinterest'
@@ -63,7 +63,7 @@ class PinterestResponse(Response):
     profiles = data.find(id='ProfileLinks')
     for elem in profiles.find_all('li'):
       try:
-        self['profiles'].append(elem.a.get('href'))
+        self['profiles'].append(format_url(elem.a.get('href')))
       except:
         if elem.get('id') == 'ProfileLocation':
           self['location'] = elem.get_text().strip()

@@ -7,7 +7,7 @@ import simplejson
 from response import Response
 from scavenger import Scavenger
 from scavenger_config import YAHOO_KEY, YAHOO_PWD
-from scavenger_utils import NOT_FOUND_ERROR_CODE, OK_CODE
+from scavenger_utils import NOT_FOUND_ERROR_CODE, OK_CODE, format_url
 
 YAHOO = "yahoo"
 
@@ -53,7 +53,10 @@ class YahooResponse(Response):
     if 'displayAge' in data:
       self['age'] = data['displayAge']
     if 'profileUrl' in data:
-      self['profiles'] = [data['profileUrl']]
+      other_profiles = [data['profileUrl']]
+      self['profiles'] = []
+      for profile_url in other_profiles:
+        self['profiles'].append(format_url(profile_url))
 
     display_name = None
     if 'nickname' in data:
