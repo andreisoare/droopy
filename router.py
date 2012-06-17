@@ -6,6 +6,7 @@ import beanstalkc
 import thread
 import simplejson
 from datetime import datetime
+from pymongo.objectid import ObjectId
 
 from networks_scouter import NetworkScouterScavenger
 from base.mongodb_utils import get_mongo_collection
@@ -55,10 +56,10 @@ class Router:
 
       email = job.body
       social_profile = self.profiles.SocialProfile()
-      self.processing_profiles[email] = social_profile
-      social_profile.email = unicode(email)
-      social_profile.time = datetime.now()
+      social_profile['email'] = unicode(email)
+      social_profile['time'] = datetime.now()
       social_profile.save()
+      self.processing_profiles[email] = str(social_profile['_id'])
 
       self.forward_email(social_profile)
       job.delete()
@@ -66,7 +67,7 @@ class Router:
   def forward_email(self, social_profile):
     for key in scavengers_dict:
       self.email_beanstalk.use(key + '_in')
-      self.email_beanstalk.put(str(social_profile.email))
+      self.email_beanstalk.put(str(social_profile['email']))
 
   def watch_responses(self):
     while True:
@@ -83,7 +84,8 @@ class Router:
     response_object = queue_response['response']
     network_type = queue_response['type']
 
-    social_profile = self.processing_profiles[str(response_object['email'])]
+    profile_id = self.processing_profiles[str(response_object['email'])]
+    social_profile = self.profiles.find_one({'_id': ObjectId(profile_id)})
 
     status = network_type + '_status'
     link = network_type + '_link'
@@ -98,29 +100,29 @@ class Router:
 
     if int(response_object['status']) < 400:
       if 'username' in response_object and len(response_object['username']) and\
-          response_object['username'] not in social_profile.usernames:
-        social_profile.usernames.append(unicode(response_object['username']))
+          response_object['username'] not in social_profile['usernames']:
+        social_profile['usernames'].append(unicode(response_object['username']))
       if 'display_name' in response_object and \
                                           len(response_object['display_name']):
-        social_profile.display_name = unicode(response_object['display_name'])
+        social_profile['display_name'] = unicode(response_object['display_name'])
       if 'age' in response_object and len(response_object['age']):
-        ages = list(social_profile.age)
+        ages = list(social_profile['age'])
         ages.append(int(response_object['age']))
         sorted(ages)
         start = ages[0]
         end = ages[-1]
-        social_profile.age = [start, end]
+        social_profile['age'] = [start, end]
       if 'location' in response_object and len(response_object['location']):
-        social_profile.location = unicode(response_object['location'])
+        social_profile['location'] = unicode(response_object['location'])
       if 'gender' in response_object and len(response_object['gender']):
-        social_profile.gender = unicode(response_object['gender'])
+        social_profile['gender'] = unicode(response_object['gender'])
       if 'profiles' in response_object:
         for profile in response_object['profiles']:
           if len(profile):
-            social_profile.profiles.append(unicode(profile))
+            social_profile['profiles'].append(unicode(profile))
 
-    social_profile.time = datetime.now()
-    social_profile.save()
+    social_profile['time'] = datetime.now()
+    self.profiles.save(social_profile)
 
     self.test_profile_completion(social_profile)
 
@@ -133,31 +135,7 @@ class Router:
         break
 
     if profile_complete is True:
-      del self.processing_profiles[str(social_profile.email)]
-
-  def test_usernames(self, social_profile):
-    usernames = []
-    for key in scavengers_dict:
-      parsed = key + '_parsed'
-      parsed_dict = social_profile[parsed]
-      if 'username' in parsed_dict and \
-              usernames.count(parsed_dict['username']) == 0:
-        usernames.append(parsed_dict['username'])
-
-    for username in usernames:
-      ns = NetworkScouterScavenger(social_profile.email, username)
-      response_dict = ns.run()
-
-      for key, value in response_dict.items():
-        if value is True:
-          # add username to corresponding social network in social profile
-          if key in social_profile.networks:
-            social_profile.networks[key].append(username)
-          else:
-            social_profile.networks[key] = [username]
-
-    social_profile.time = datetime.now()
-    social_profile.save()
+      del self.processing_profiles[str(social_profile['email'])]
 
 if __name__=="__main__":
   r = Router()
