@@ -34,8 +34,8 @@ class YahooScavenger(Scavenger):
         break
 
     if to_check is False:
-      return Response(NOT_FOUND_ERROR_CODE, 'Email address not matching yahoo \
-                                     standard\'s naming policies', email)
+      return Response(NOT_FOUND_ERROR_CODE,
+        'Email address not matching yahoo standard\'s naming policies', email)
 
     y = yql.TwoLegged(YAHOO_KEY, YAHOO_PWD)
     yql_object = y.execute("select * from social.profile where guid in \

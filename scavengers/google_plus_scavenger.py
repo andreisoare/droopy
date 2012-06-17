@@ -41,8 +41,8 @@ class GooglePlusScavenger(Scavenger):
         break
 
     if to_check is False:
-      return Response(NOT_FOUND_ERROR_CODE, 'Email address not matching \
-                              Google\'s email naming policies', email)
+      return Response(NOT_FOUND_ERROR_CODE,
+        'Email address not matching Google\'s email naming policies', email)
 
     response = http_request(email, "GET", PICASA_HOST, "/%s" % username, {})
 
