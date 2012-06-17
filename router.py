@@ -27,6 +27,7 @@ scavengers_dict = {
 
 EMAIL_QUEUE = "eta_queue"
 RESPONSE_QUEUE = "response_queue"
+USERNAME_QUEUE = "mini_eta_queue"
 
 class Router:
   def __init__(self):
@@ -34,6 +35,8 @@ class Router:
     self.processing_profiles = {}
     self.email_beanstalk = beanstalkc.Connection()
     self.response_beanstalk = beanstalkc.Connection()
+    self.username_beanstalk = beanstalkc.Connection()
+    self.username_beanstalk.use(USERNAME_QUEUE)
 
     self.response_beanstalk.watch(RESPONSE_QUEUE)
     thread.start_new_thread(self.watch_responses, ())
@@ -99,9 +102,8 @@ class Router:
     social_profile[parsed] = response_object
 
     if int(response_object['status']) < 400:
-      if 'username' in response_object and len(response_object['username']) and\
-          response_object['username'] not in social_profile['usernames']:
-        social_profile['usernames'].append(unicode(response_object['username']))
+      if 'username' in response_object and len(response_object['username']):
+        social_profile['username'] = (unicode(response_object['username']))
       if 'display_name' in response_object and \
                                           len(response_object['display_name']):
         social_profile['display_name'] = unicode(response_object['display_name'])
@@ -135,6 +137,20 @@ class Router:
         break
 
     if profile_complete is True:
+      # send package on mini-router's username_queue
+      package = {}
+      package['email'] = str(social_profile['email'])
+      package['id'] = str(social_profile['_id'])
+      package['collection'] = MONGO_COLLECTION
+
+      # send a package for every found username in certain network
+      for network_type in scavengers_dict:
+        parsed = network_type + '_parsed'
+        response_object = social_profile[parsed]
+        if 'username' in response_object and len(response_object['username']):
+          package['username'] = response_object['username']
+          self.username_beanstalk.put(simplejson.dumps(package))
+
       del self.processing_profiles[str(social_profile['email'])]
 
 if __name__=="__main__":
