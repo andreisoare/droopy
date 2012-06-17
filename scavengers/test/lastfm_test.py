@@ -31,7 +31,7 @@ USERNAME_INVALID = "andrei.soare"
 DISPLAY_NAME = "Andrei Soare"
 LOCATION = "CA"
 GENDER = "m"
-PROFILE = "http://www.last.fm/user/andreisoare"
+PROFILE = "last.fm/user/andreisoare"
 
 class LastfmTest(unittest.TestCase):
   def setUp(self):

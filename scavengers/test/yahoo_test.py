@@ -26,7 +26,7 @@ USERNAME = "camp101988"
 DISPLAY_NAME = "Mihai Tabara"
 GENDER = "M"
 LOCATION = "Bistrita - Romania"
-PROFILE = "http://profile.yahoo.com/BTKCHDBX5EPOHA6RCY2NYYMJ5Q"
+PROFILE = "profile.yahoo.com/BTKCHDBX5EPOHA6RCY2NYYMJ5Q"
 
 class YahooTest(unittest.TestCase):
   def setUp(self):

@@ -30,7 +30,7 @@ USERNAME_VALID = "andreisoare"
 USERNAME_INVALID = "andrei.soare"
 DISPLAY_NAME = "Andrei Soare"
 LOCATION = "Vancouver, Canada Area"
-PROFILE = "www.linkedin.com/andreisoare"
+PROFILE = "linkedin.com/andreisoare"
 
 class LinkedinTest(unittest.TestCase):
   def setUp(self):

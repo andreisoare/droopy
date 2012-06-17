@@ -27,7 +27,7 @@ DISPLAY_NAME = "Didi"
 GENDER = "Female"
 AGE = "22"
 LOCATION = "Bucuresti (hometown Tg-Jiu)"
-PROFILE = "http://www.myspace.com/434790566"
+PROFILE = "myspace.com/434790566"
 
 class MyspaceTest(unittest.TestCase):
   def setUp(self):

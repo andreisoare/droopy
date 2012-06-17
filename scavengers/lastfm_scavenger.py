@@ -75,8 +75,6 @@ class LastfmResponse(Response):
     self['location'] = info['country']
     self['age'] = info['age']
     self['gender'] = info['gender']
-    other_profiles = [info['url']]
-    for profile_url in other_profiles:
-      self['profiles'].append(format_url(profile_url))
-
+    self['profiles'] = [format_url(info['url'])]
     self['username'] = info['name']
+

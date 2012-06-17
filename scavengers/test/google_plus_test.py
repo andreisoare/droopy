@@ -24,7 +24,7 @@ EMAIL_VALID = "andrei.soare@gmail.com"
 EMAIL_INVALID = "asoare13@yahoo.com"
 DISPLAY_NAME = "Andrei Soare"
 GENDER = "male"
-PROFILE = "https://plus.google.com/103152217498278365453"
+PROFILE = "plus.google.com/103152217498278365453"
 
 class GooglePlusTest(unittest.TestCase):
   def setUp(self):

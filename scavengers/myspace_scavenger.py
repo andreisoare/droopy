@@ -48,6 +48,5 @@ class MyspaceResponse(Response):
     self['gender'] = info['gender']
     self['age'] = info['age']
     self['location'] = info['location']
-    other_profiles = [info['profileUrl']]
-    for profile_url in other_profiles:
-      self['profiles'].append(format_url(profile_url))
+    self['profiles'] = [format_url(info['profileUrl'])]
+

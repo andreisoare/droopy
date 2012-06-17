@@ -22,7 +22,7 @@ from scavengers.aboutme_scavenger import AboutmeScavenger
 NAME = "aboutme"
 IN = NAME + "_in"
 OUT = NAME + "_out"
-TIMEOUT = 5
+TIMEOUT = 15
 COLLECTION = "test"
 
 EMAIL = "test"

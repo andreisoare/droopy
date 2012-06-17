@@ -30,7 +30,7 @@ USERNAME_VALID = "andreisoare"
 USERNAME_INVALID = "andrei.soare"
 DISPLAY_NAME = "Andrei Soare"
 LOCATION = "Bucharest Romania"
-PROFILE = "http://soundcloud.com/andreisoare"
+PROFILE = "soundcloud.com/andreisoare"
 
 class SoundcloudTest(unittest.TestCase):
   def setUp(self):

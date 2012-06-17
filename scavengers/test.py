@@ -26,7 +26,7 @@ networks = {
           }
 
 if __name__=="__main__":
-  profiles = get_mongo_collection()
+  profiles = get_mongo_collection('test')
 
   social_profile = profiles.SocialProfile()
   jsn = {}

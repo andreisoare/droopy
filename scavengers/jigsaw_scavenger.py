@@ -57,7 +57,5 @@ class JigsawResponse(Response):
     #TODO(diana) maybe add address?
     self['location'] = "%s, %s, %s" % (data['contacts'][0]['city'],
               data['contacts'][0]['state'], data['contacts'][0]['country'])
-    other_profiles = [data['contacts'][0]['contactURL']]
-    for profile_url in other_profiles:
-      self['profiles'].append(format_url(profile_url))
+    self['profiles'] = [format_url(data['contacts'][0]['contactURL'])]
 

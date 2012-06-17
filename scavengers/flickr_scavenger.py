@@ -72,10 +72,5 @@ class FlickrResponse(Response):
     self['username'] = data['person']['username']['_content']
     self['display_name'] = data['person']['realname']['_content']
     self['location'] = data['person']['location']['_content']
-
-    other_profiles = [data['person']['profileurl']['_content']]
-    self['profiles'] = []
-
-    for profile_url in other_profiles:
-      self['profiles'].append(format_url(profile_url))
+    self['profiles'] = [format_url(data['person']['profileurl']['_content'])]
 

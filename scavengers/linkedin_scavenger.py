@@ -68,8 +68,6 @@ class LinkedinResponse(Response):
     self['location'] = \
                 headline.find('span', {'class' : 'locality'}).get_text().strip()
 
-    other_profiles = [LINKEDIN_HOST + "/" + username]
-    for profile_url in other_profiles:
-      self['profiles'].append(format_url(profile_url))
-
+    self['profiles'] = [format_url(LINKEDIN_HOST + "/" + username)]
     self['username'] = username
+

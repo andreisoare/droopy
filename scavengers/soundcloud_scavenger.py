@@ -82,9 +82,7 @@ class SoundcloudResponse(Response):
       self['raw_data'] = info
       self['display_name'] = info['full_name']
       self['location'] = "%s %s" % (info['city'], info['country'])
-      other_profiles = [info['permalink_url']]
-      for profile_url in other_profiles:
-        self['profiles'].append(format_url(profile_url))
+      self['profiles'] = [format_url(info['permalink_url'])]
       if info['website']:
         self['profiles'].append(format_url(info['website']))
       break

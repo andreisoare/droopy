@@ -53,10 +53,7 @@ class YahooResponse(Response):
     if 'displayAge' in data:
       self['age'] = data['displayAge']
     if 'profileUrl' in data:
-      other_profiles = [data['profileUrl']]
-      self['profiles'] = []
-      for profile_url in other_profiles:
-        self['profiles'].append(format_url(profile_url))
+      self['profiles'] = [format_url(data['profileUrl'])]
 
     display_name = None
     if 'nickname' in data:

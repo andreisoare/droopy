@@ -23,7 +23,7 @@ EMAIL_VALID = "asadat@salesforce.com"
 EMAIL_INVALID = "tabara.mihai@gmail.com"
 DISPLAY_NAME = "Ali Sadat"
 LOCATION = "San Francisco, CA, United States"
-PROFILE = "http://www.jigsaw.com/BC.xhtml?contactId=45003056"
+PROFILE = "jigsaw.com/BC.xhtml?contactId=45003056"
 
 class JigsawTest(unittest.TestCase):
   def setUp(self):

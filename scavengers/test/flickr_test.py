@@ -24,7 +24,7 @@ EMAIL_INVALID = "tabara.mihai@gmail.com"
 USERNAME = "tabara mihai"
 DISPLAY_NAME = ""
 LOCATION = ""
-PROFILE = "http://www.flickr.com/people/9910681@N02/"
+PROFILE = "flickr.com/people/9910681@N02/"
 
 class FlickrTest(unittest.TestCase):
   def setUp(self):
