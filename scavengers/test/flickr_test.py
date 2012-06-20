@@ -22,8 +22,6 @@ TIMEOUT = 5
 EMAIL_VALID = "camp101988@yahoo.com"
 EMAIL_INVALID = "tabara.mihai@gmail.com"
 USERNAME = "tabara mihai"
-DISPLAY_NAME = ""
-LOCATION = ""
 PROFILE = "flickr.com/people/9910681@N02/"
 
 class FlickrTest(unittest.TestCase):
@@ -44,8 +42,6 @@ class FlickrTest(unittest.TestCase):
     self.assertEqual(self.response['status'], OK_CODE)
     self.assertEqual(str(self.response['email']), EMAIL_VALID)
     self.assertEqual(str(self.response['username']), USERNAME)
-    self.assertEqual(str(self.response['display_name']), DISPLAY_NAME)
-    self.assertEqual(str(self.response['location']), LOCATION)
     self.assertEqual(str(self.response['profiles'][0]), PROFILE)
 
   def test_invalid(self):

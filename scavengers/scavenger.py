@@ -35,7 +35,7 @@ class Scavenger(Worker):
   def on_job(self, job):
     """Process one job from beanstalk queue."""
     job.bury()
-    logging.info("JOB %s" % job.body)
+#    logging.info("JOB %s" % job.body)
     result = self.process_job(job)
     self.enqueue_result(result)
     job.done()

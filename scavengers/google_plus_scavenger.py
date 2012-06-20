@@ -7,6 +7,9 @@
 import re
 import simplejson
 import httplib
+import logging
+
+import global_settings
 from scavenger import Scavenger
 from scavenger_config import GOOGLE_PLUS_KEY
 from response import Response
@@ -24,7 +27,10 @@ class GooglePlusScavenger(Scavenger):
 
   def process_job(self, job):
     email = job.body
+    logging.info('%s got email %s' % (GOOGLE_PLUS, email))
     response = self._google_plus(email)
+    logging.info('%s finished with email %s with status %s' %
+          (GOOGLE_PLUS, email, response['status']))
     return simplejson.dumps({
                               'type' : GOOGLE_PLUS,
                               'response' : response
@@ -49,6 +55,9 @@ class GooglePlusScavenger(Scavenger):
     if response.is_error():
       return response
     user_id = self._get_user_id(response['raw_data'])
+    if not user_id:
+      response['status'] = NOT_FOUND_ERROR_CODE
+      return response
 
     params = {'key': GOOGLE_PLUS_KEY}
     response = http_request(email, "GET", GOOGLE_HOST,
@@ -65,29 +74,42 @@ class GooglePlusScavenger(Scavenger):
     end_info = page.find("};", index)
     info = page[start_info:end_info]
     match = re.search('name(\s)*:\'(\d)*\'', info)
+    if not match:
+      return None
     return match.group(0).split('\'')[1]
 
 class GooglePlusResponse(Response):
   def __init__(self, response):
     super(GooglePlusResponse, self).__init__(response['status'],
                           response['raw_data'], response['email'])
-
     info = simplejson.loads(self['raw_data'])
 
-    if info['name']['givenName'] == "" or info['name']['familyName'] == "":
+    if 'displayName' in info and info['displayName']:
       self['display_name'] = info['displayName']
-    else:
-      self['display_name'] = \
-              "%s %s" % (info['name']['givenName'], info['name']['familyName'])
-    self['gender'] = info['gender']
+    if 'name' in info and info['name']:
+      name = info['name']
+      givenName = ''
+      familyName = ''
+      if 'givenName' in name and name['givenName']:
+        givenName = name['givenName']
+      if 'familyName' in name and name['familyName']:
+        familyName = name['familyName']
+      if givenName or familyName:
+        self['display_name'] = ('%s %s' % (givenName, familyName)).strip()
+
+    if 'gender' in info and info['gender']:
+      self['gender'] = info['gender']
 
     self['profiles'] = []
-    for url in info['urls']:
-      if 'type' in url.keys():
-        if url['type'] == "profile":
-          self['profiles'].insert(0, format_url(url['value']))
+    if 'urls' in info and info['urls']:
+      for url in info['urls']:
+        if 'type' in url.keys():
+          if url['type'] == "profile":
+            if 'value' in url and url['value']:
+              self['profiles'].insert(0, format_url(url['value']))
+          else:
+            continue
         else:
-          continue
-      else:
-        self['profiles'].append(format_url(url['value']))
+          if 'value' in url and url['value']:
+            self['profiles'].append(format_url(url['value']))
 

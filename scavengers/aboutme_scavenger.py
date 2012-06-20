@@ -62,9 +62,17 @@ class AboutmeResponse(Response):
     super(AboutmeResponse, self).__init__(response['status'],
                           response['raw_data'], response['email'])
     data = BeautifulSoup(response['raw_data'])
+
     self['profiles'] = [ABOUTME_HOST + "/" + username]
     self['username'] = username
-    self['display_name'] = data.find(id='profile_box').div.h1.string
+
+    profile_box = data.find(id='profile_box')
+    if profile_box:
+      try:
+        if profile_box.div.h1.string:
+          self['display_name'] = profile_box.div.h1.string
+      except:
+        pass
 
     for website in data.find_all('a', {'class': 'website'}):
       self['profiles'].append(format_url(website.get('href')))
@@ -76,7 +84,7 @@ class AboutmeResponse(Response):
       body = data.find('body', {'class':'aboutmeapp'})
       try:
         profile = body.find('div', {'class':'top_section'}).h1.a.get('href')
-        if len(profile):
+        if profile:
           self['profiles'].append(format_url(profile))
       except:
         pass

@@ -2,6 +2,9 @@
 # Author: tabara.mihai@gmail.com (Mihai Tabara)
 
 import simplejson
+import logging
+
+import global_settings
 from scavenger import Scavenger
 from scavenger_config import FLICKR_KEY, FLICKR_PWD
 from scavenger_utils import http_request, NOT_FOUND_ERROR_CODE, format_url
@@ -18,7 +21,10 @@ class FlickrScavenger(Scavenger):
 
   def process_job(self, job):
     email = job.body
+    logging.info('%s got email %s' % (FLICKR, email))
     response = self._flickr(email)
+    logging.info('%s finished with email %s with status %s' %
+          (FLICKR, email, response['status']))
     return simplejson.dumps({
                               'type' : FLICKR,
                               'response' : response
@@ -64,13 +70,16 @@ class FlickrResponse(Response):
   def __init__(self, response):
     super(FlickrResponse, self).__init__(response['status'],
                          response['raw_data'], response['email'])
-
     message = response['raw_data']
     message = message[RESPONSE_PREFIX_LENGTH:len(message)-1]
-    data = simplejson.loads(message)
+    info = simplejson.loads(message)['person']
 
-    self['username'] = data['person']['username']['_content']
-    self['display_name'] = data['person']['realname']['_content']
-    self['location'] = data['person']['location']['_content']
-    self['profiles'] = [format_url(data['person']['profileurl']['_content'])]
+    if 'username' in info and info['username']['_content']:
+      self['username'] = info['username']['_content']
+    if 'realname' in info and info['realname']['_content']:
+      self['display_name'] = info['realname']['_content']
+    if 'location' in info and info['location']['_content']:
+      self['location'] = info['location']['_content']
+    if 'profileurl' in info and info['profileurl']['_content']:
+      self['profiles'] = [format_url(info['profileurl']['_content'])]
 

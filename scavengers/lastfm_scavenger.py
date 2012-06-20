@@ -69,12 +69,18 @@ class LastfmResponse(Response):
   def __init__(self, response):
     super(LastfmResponse, self).__init__(response['status'],
                           response['raw_data'], response['email'])
-
     info = simplejson.loads(response['raw_data'])['user']
-    self['display_name'] = info['realname']
-    self['location'] = info['country']
-    self['age'] = info['age']
-    self['gender'] = info['gender']
-    self['profiles'] = [format_url(info['url'])]
-    self['username'] = info['name']
+
+    if 'realname' in info and info['realname']:
+      self['display_name'] = info['realname']
+    if 'name' in info and info['name']:
+      self['username'] = info['name']
+    if 'country' in info and info['country']:
+      self['location'] = info['country']
+    if 'age' in info and info['age']:
+      self['age'] = info['age']
+    if 'gender' in info and info['gender']:
+      self['gender'] = info['gender']
+    if 'url' in info and info['url']:
+      self['profiles'] = [format_url(info['url'])]
 

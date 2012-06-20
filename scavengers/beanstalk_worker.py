@@ -53,12 +53,12 @@ class Worker(object):
     def cycle(self):
         job = None
         try:
-            self.log.info('waiting for jobs.')
+            #self.log.info('waiting for jobs.')
 
             job = self.conn.reserve()
 
             if job is not None:
-                self.log.info('got job with id #%d' % job.jid)
+               # self.log.info('got job with id #%d' % job.jid)
                 self.on_job(Job(job))
 
         except SocketError:

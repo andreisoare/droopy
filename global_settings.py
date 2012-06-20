@@ -6,6 +6,7 @@
 
 BEANSTALKD = "localhost:11300"
 MONGODB = "localhost:27017"
+LOG_FILE = "usemails.log"
 
 import logging
 from pytz import utc, timezone
@@ -20,5 +21,5 @@ def logging_time_converter(*args):
 
 LOG_FORMAT = "%(asctime)s:%(module)s:%(filename)s:%(lineno)s: [%(levelname)s]: %(message)s"
 DATE_FORMAT = "%Y-%m-%d %H:%M:%S"
-logging.basicConfig(format=LOG_FORMAT, datefmt=DATE_FORMAT, level=logging.INFO)
+logging.basicConfig(filename=LOG_FILE, format=LOG_FORMAT, datefmt=DATE_FORMAT, level=logging.INFO)
 logging.Formatter.converter = logging_time_converter

@@ -57,16 +57,19 @@ class TwitterResponse(Response):
     super(TwitterResponse, self).__init__(response['status'],
                           response['raw_data'], response['email'])
     data = BeautifulSoup(response['raw_data'])
+
     self['username'] = username
     self['profiles'] = [TWITTER_HOST + "/" + username]
-    for x in data.find(id="profile").address.ul.find_all('li'):
-      spans = x.find_all('span')
-      if not len(spans):
-        continue
-      if spans[0].string == 'Name':
-        self['display_name'] = spans[1].string
-      elif spans[0].string == 'Location':
-        self['location'] = spans[1].string
-      elif spans[0].string == 'Web':
-        self['profiles'].append(format_url(x.a.get('href')))
+    profile = data.find(id='profile')
+    if profile:
+      for x in profile.address.ul.find_all('li'):
+        spans = x.find_all('span')
+        if not len(spans):
+          continue
+        if spans[0].string == 'Name':
+          self['display_name'] = spans[1].string
+        elif spans[0].string == 'Location':
+          self['location'] = spans[1].string
+        elif spans[0].string == 'Web':
+          self['profiles'].append(format_url(x.a.get('href')))
 

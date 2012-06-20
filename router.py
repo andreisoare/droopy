@@ -3,11 +3,14 @@
 #         diana.tiriplica@gmail.com (Diana-Victoria Tiriplica)
 
 import beanstalkc
+import time
 import thread
 import simplejson
+import logging
 from datetime import datetime
 from pymongo.objectid import ObjectId
 
+import global_settings
 from networks_scouter import NetworkScouterScavenger
 from base.mongodb_utils import get_mongo_collection
 from mongodb.models import SocialProfile
@@ -28,6 +31,8 @@ scavengers_dict = {
 EMAIL_QUEUE = "eta_queue"
 RESPONSE_QUEUE = "response_queue"
 USERNAME_QUEUE = "mini_eta_queue"
+
+TIME_SLEEP = 7.5
 
 class Router:
   def __init__(self):
@@ -58,6 +63,7 @@ class Router:
         continue
 
       email = job.body
+      logging.info('================ Got email %s =================\n' % email)
       social_profile = self.profiles.SocialProfile()
       social_profile['email'] = unicode(email)
       social_profile['time'] = datetime.now()
@@ -66,6 +72,7 @@ class Router:
 
       self.forward_email(social_profile)
       job.delete()
+      time.sleep(TIME_SLEEP)
 
   def forward_email(self, social_profile):
     for key in scavengers_dict:
@@ -87,48 +94,64 @@ class Router:
     response_object = queue_response['response']
     network_type = queue_response['type']
 
-    profile_id = self.processing_profiles[str(response_object['email'])]
-    social_profile = self.profiles.find_one({'_id': ObjectId(profile_id)})
+    logging.info('Got response from %s (%s)' %\
+          (network_type, response_object['email']))
+
+    profile_id = ObjectId(
+                        self.processing_profiles[str(response_object['email'])])
 
     status = network_type + '_status'
     link = network_type + '_link'
     parsed = network_type + '_parsed'
 
-    social_profile[status] = int(response_object['status'])
-    if social_profile[status] >= 400:
-      social_profile[link] = unicode("")
+    self.profiles.find_and_modify({'_id' : profile_id},
+      {'$set' : {status : int(response_object['status'])}})
+    if response_object['status'] >= 400:
+      self.profiles.find_and_modify({'_id' : profile_id},
+        {'$set' : {link : unicode('')}})
     else:
-      social_profile[link] = unicode(response_object['profiles'][0])
-    social_profile[parsed] = response_object
+      self.profiles.find_and_modify({'_id' : profile_id},
+        {'$set' : {link : unicode(response_object['profiles'][0])}})
+    self.profiles.find_and_modify({'_id' : profile_id},
+      {'$set' : {parsed: response_object}})
 
     if int(response_object['status']) < 400:
       if 'username' in response_object and len(response_object['username']):
-        social_profile['username'] = (unicode(response_object['username']))
+        self.profiles.find_and_modify({'_id' : profile_id},
+          {'$set' : {'username' : unicode(response_object['username'])}})
       if 'display_name' in response_object and \
                                           len(response_object['display_name']):
-        social_profile['display_name'] = unicode(response_object['display_name'])
+        self.profiles.find_and_modify({'_id' : profile_id},
+          {'$set' : {'display_name' : unicode(response_object['display_name'])}})
       if 'age' in response_object and len(response_object['age']):
-        ages = list(social_profile['age'])
+        ages = list(self.profiles.find_one({'_id' : profile_id})['age'])
         ages.append(int(response_object['age']))
         sorted(ages)
         start = ages[0]
         end = ages[-1]
-        social_profile['age'] = [start, end]
+        self.profiles.find_and_modify({'_id' : profile_id},
+          {'$set' : {'age' : [start, end]}})
       if 'location' in response_object and len(response_object['location']):
-        social_profile['location'] = unicode(response_object['location'])
+        self.profiles.find_and_modify({'_id' : profile_id},
+          {'$set' : {'location' : unicode(response_object['location'])}})
       if 'gender' in response_object and len(response_object['gender']):
-        social_profile['gender'] = unicode(response_object['gender'])
+        self.profiles.find_and_modify({'_id' : profile_id},
+          {'$set' : {'gender' : unicode(response_object['gender'])}})
       if 'profiles' in response_object:
         for profile in response_object['profiles']:
           if len(profile):
-            social_profile['profiles'].append(unicode(profile))
+            self.profiles.find_and_modify({'_id' : profile_id},
+              {'$push' : {'profiles' : unicode(profile)}})
+    self.profiles.find_and_modify({'_id' : profile_id},
+      {'$set' : {'time' : datetime.now()}})
 
-    social_profile['time'] = datetime.now()
-    self.profiles.save(social_profile)
 
-    self.test_profile_completion(social_profile)
+    logging.info('Finished processing response from %s (%s)' %\
+          (network_type, response_object['email']))
+    self.test_profile_completion(profile_id)
 
-  def test_profile_completion(self, social_profile):
+  def test_profile_completion(self, profile_id):
+    social_profile = self.profiles.find_one({'_id': profile_id})
     profile_complete = True
     for key in scavengers_dict:
       status = key + '_status'
@@ -137,6 +160,9 @@ class Router:
         break
 
     if profile_complete is True:
+      logging.info('+++++++++++++++ Finished with email %s +++++++++++++++\n' %\
+              social_profile['email'])
+      del self.processing_profiles[str(social_profile['email'])]
       # send package on mini-router's username_queue
       package = {}
       package['email'] = str(social_profile['email'])
@@ -154,7 +180,6 @@ class Router:
           package['username'] = response_object['username']
           self.username_beanstalk.put(simplejson.dumps(package))
 
-      del self.processing_profiles[str(social_profile['email'])]
 
 if __name__=="__main__":
   r = Router()

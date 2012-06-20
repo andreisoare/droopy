@@ -70,20 +70,29 @@ class SoundcloudResponse(Response):
   def __init__(self, response, username):
     super(SoundcloudResponse, self).__init__(response['status'],
                           response['raw_data'], response['email'])
-
     users_list = simplejson.loads(response['raw_data'])
+
     found = False
     for info in users_list:
       if info['permalink'] != username:
         continue
-
       found = True
+
       self['username'] = username
       self['raw_data'] = info
-      self['display_name'] = info['full_name']
-      self['location'] = "%s %s" % (info['city'], info['country'])
-      self['profiles'] = [format_url(info['permalink_url'])]
-      if info['website']:
+      if 'full_name' in info and info['full_name']:
+        self['display_name'] = info['full_name']
+      city = ''
+      country = ''
+      if 'city' in info and info['city']:
+        city = info['city']
+      if 'country' in info and info['country']:
+        country = info['country']
+      if city or country:
+        self['location'] = ("%s %s" % (city, country)).strip()
+      if 'permalink_url' in info and info['permalink_url']:
+        self['profiles'] = [format_url(info['permalink_url'])]
+      if 'website' in info and info['website']:
         self['profiles'].append(format_url(info['website']))
       break
 

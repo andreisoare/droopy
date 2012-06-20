@@ -5,6 +5,9 @@
 
 import simplejson
 import httplib
+import logging
+
+import global_settings
 from scavenger import Scavenger
 from response import Response
 from scavenger_utils import http_request, format_url
@@ -19,7 +22,10 @@ class GithubScavenger(Scavenger):
 
   def process_job(self, job):
     email = job.body
+    logging.info('%s got email %s' % (GITHUB, email))
     response = self._github(email)
+    logging.info('%s finished with email %s with status %s' %
+          (GITHUB, email, response['status']))
     return simplejson.dumps({
                               'type' : GITHUB,
                               'response' : response
@@ -38,13 +44,15 @@ class GithubResponse(Response):
   def __init__(self, response):
     super(GithubResponse, self).__init__(response['status'],
                           response['raw_data'], response['email'])
-
-
     info = simplejson.loads(response['raw_data'])['user']
-    self['display_name'] = info['name']
-    self['location'] = info['location']
-    self['profiles'] = ["github.com/" + info['login']]
-    if 'blog' in info and len(info['blog']):
+
+    if 'name' in info and info['name']:
+      self['display_name'] = info['name']
+    if 'location' in info and info['location']:
+      self['location'] = info['location']
+    if 'login' in info and info['login']:
+      self['username'] = info['login']
+      self['profiles'] = ["github.com/" + info['login']]
+    if 'blog' in info and info['blog']:
       self['profiles'].append(format_url(info['blog']))
-    self['username'] = info['login']
 

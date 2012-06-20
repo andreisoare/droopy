@@ -12,6 +12,7 @@ from scavengers.test import GooglePlusTest
 from scavengers.test import YahooTest
 from scavengers.test import MyspaceTest
 from scavengers.test import JigsawTest
+from scavengers.test import FoursquareTest
 
 # Username scavengers tests
 from scavengers.test import PinterestTest

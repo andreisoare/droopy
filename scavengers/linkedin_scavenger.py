@@ -59,15 +59,28 @@ class LinkedinResponse(Response):
                           response['raw_data'], response['email'])
     data = BeautifulSoup(response['raw_data'])
 
-    name = data.find(id="name")
-    given_name = name.find('span', {'class' : "given-name"}).get_text()
-    family_name = name.find('span', {'class' : "family-name"}).get_text()
-    self['display_name'] = "%s %s" % (given_name, family_name)
-
-    headline = data.find(id="headline")
-    self['location'] = \
-                headline.find('span', {'class' : 'locality'}).get_text().strip()
-
     self['profiles'] = [format_url(LINKEDIN_HOST + LINKEDIN_PATH + username)]
     self['username'] = username
+
+    name = data.find(id="name")
+    if name:
+      try:
+        family_name = name.find('span', {'class' : "family-name"}).get_text()
+      except:
+        family_name = ''
+      try:
+        given_name = name.find('span', {'class' : "given-name"}).get_text()
+      except:
+        given_name = ''
+
+      if given_name or family_name:
+        self['display_name'] = ("%s %s" % (given_name, family_name)).strip()
+
+    headline = data.find(id="headline")
+    if headline:
+      try:
+        self['location'] = \
+                headline.find('span', {'class' : 'locality'}).get_text().strip()
+      except:
+        pass
 

@@ -3,7 +3,9 @@
 
 import simplejson
 import httplib
+import logging
 
+import global_settings
 from scavenger import Scavenger
 from scavenger_config import JIGSAW_KEY
 from scavenger_utils import http_request, NOT_FOUND_ERROR_CODE, format_url
@@ -19,7 +21,10 @@ class JigsawScavenger(Scavenger):
 
   def process_job(self, job):
     email = job.body
+    logging.info('%s got email %s' % (JIGSAW, email))
     response = self._jigsaw(email)
+    logging.info('%s finished with email %s with status %s' %
+          (JIGSAW, email, response['status']))
     return simplejson.dumps({
                               'type' : JIGSAW,
                               'response' : response
@@ -48,14 +53,31 @@ class JigsawResponse(Response):
   def __init__(self, response):
     super(JigsawResponse, self).__init__(response['status'],
                          response['raw_data'], response['email'])
-
     message = response['raw_data']
-    data = simplejson.loads(message)
+    info = simplejson.loads(message)['contacts'][0]
 
-    self['display_name'] = data['contacts'][0]['firstname'] + ' ' + \
-                            data['contacts'][0]['lastname']
+    firstName = ''
+    lastName = ''
+    if 'firstname' in info and info['firstname']:
+      firstName = info['firstname']
+    if 'lastname' in info and info['lastname']:
+      lastName = info['lastname']
+    if firstName or lastName:
+      self['display_name'] = ('%s %s' % (firstName, lastName)).strip()
+
     #TODO(diana) maybe add address?
-    self['location'] = "%s, %s, %s" % (data['contacts'][0]['city'],
-              data['contacts'][0]['state'], data['contacts'][0]['country'])
-    self['profiles'] = [format_url(data['contacts'][0]['contactURL'])]
+    city = ''
+    state = ''
+    country = ''
+    if 'city' in info and info['city']:
+      city = info['city']
+    if 'state' in info and info['state']:
+      state = info['state']
+    if 'country' in info and info['country']:
+      country = info['country']
+    if city or state or country:
+      self['location'] = ('%s %s %s' % (city, state, country)).strip()
+
+    if 'contactURL' in info and info['contactURL']:
+      self['profiles'] = [format_url(info['contactURL'])]
 

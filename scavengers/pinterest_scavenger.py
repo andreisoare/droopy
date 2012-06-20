@@ -57,14 +57,19 @@ class PinterestResponse(Response):
     super(PinterestResponse, self).__init__(response['status'],
                           response['raw_data'], response['email'])
     data = BeautifulSoup(response['raw_data'])
+
     self['username'] = username
-    self['display_name'] = data.find(id='ProfileHeader').h1.string
+    try:
+      self['display_name'] = data.find(id='ProfileHeader').h1.string
+    except:
+      pass
     self['profiles'] = ["%s/%s/" % (PINTEREST_HOST, username)]
     profiles = data.find(id='ProfileLinks')
-    for elem in profiles.find_all('li'):
-      try:
-        self['profiles'].append(format_url(elem.a.get('href')))
-      except:
-        if elem.get('id') == 'ProfileLocation':
-          self['location'] = elem.get_text().strip()
+    if profiles:
+      for elem in profiles.find_all('li'):
+        try:
+          self['profiles'].append(format_url(elem.a.get('href')))
+        except:
+          if elem.get('id') == 'ProfileLocation':
+            self['location'] = elem.get_text().strip()
 

@@ -4,6 +4,9 @@
 # This scavenger gets information about a user from MySpace.
 
 import simplejson
+import logging
+
+import global_settings
 from scavenger import Scavenger
 from response import Response
 from scavenger_utils import http_request, format_url
@@ -18,7 +21,10 @@ class MyspaceScavenger(Scavenger):
 
   def process_job(self, job):
     email = job.body
+    logging.info('%s got email %s' % (MYSPACE, email))
     response = self._myspace(email)
+    logging.info('%s finished with email %s with status %s' %
+          (MYSPACE, email, response['status']))
     return simplejson.dumps({
                               'type' : MYSPACE,
                               'response' : response
@@ -40,13 +46,18 @@ class MyspaceResponse(Response):
   def __init__(self, response):
     super(MyspaceResponse, self).__init__(response['status'],
                           response['raw_data'], response['email'])
-# TODO(diana) check if profiles are given back
+    # TODO(diana) check if profiles are given back
     data = simplejson.loads(self['raw_data'])
     info = data['entry'][0]
 
-    self['display_name'] = info['displayName']
-    self['gender'] = info['gender']
-    self['age'] = info['age']
-    self['location'] = info['location']
-    self['profiles'] = [format_url(info['profileUrl'])]
+    if 'displayName' in info and info['displayName']:
+      self['display_name'] = info['displayName']
+    if 'gender' in info and info['gender']:
+      self['gender'] = info['gender']
+    if 'age' in info and info['age']:
+      self['age'] = info['age']
+    if 'location' in info and info['location']:
+      self['location'] = info['location']
+    if 'profileUrl' in info and info['profileUrl']:
+      self['profiles'] = [format_url(info['profileUrl'])]
 

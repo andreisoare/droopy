@@ -6,7 +6,9 @@
 import simplejson
 import httplib
 import datetime
+import logging
 
+import global_settings
 from scavenger import Scavenger
 from scavenger_config import FOURSQUARE_OAUTH
 from response import Response
@@ -22,7 +24,10 @@ class FoursquareScavenger(Scavenger):
 
   def process_job(self, job):
     email = job.body
+    logging.info('%s got email %s' % (FOURSQUARE, email))
     response = self._foursquare(email)
+    logging.info('%s finished with email %s with status %s' %
+          (FOURSQUARE, email, response['status']))
     return simplejson.dumps({
                               'type' : FOURSQUARE,
                               'response' : response
@@ -56,15 +61,30 @@ class FoursquareResponse(Response):
     data = simplejson.loads(self['raw_data'])
     info = data['response']['results'][0]
 
-    self['display_name'] = "%s %s" % (info['firstName'], info['lastName'])
-    self['gender'] = info['gender']
-    self['location'] = info['homeCity']
-    self['profiles'] = ['foursquare.com/user/' + info['id']]
-    #TODO(diana) check contact field
-    if 'facebook' in info['contact']:
-      self['profiles'].append("facebook.com/profile.php?id=%s" % info['contact']['facebook'])
-    if 'twitter' in info['contact']:
-      self['profiles'].append("twitter.com/%s" % info['contact']['twitter'])
+    firstName = ''
+    lastName = ''
+    if 'firstName' in info and info['firstName']:
+      firstName = info['firstName']
+    if 'lastName' in info and info['lastName']:
+      lastName = info['lastName']
+    if firstName or lastName:
+      self['display_name'] = ('%s %s' % (firstName, lastName)).strip()
+
+    if 'gender' in info and info['gender']:
+      self['gender'] = info['gender']
+    if 'homeCity' in info and info['homeCity']:
+      self['location'] = info['homeCity']
+    if 'id' in info and info['id']:
+      self['profiles'] = ['foursquare.com/user/' + info['id']]
+
+    #TODO(diana) check if contact field has others than fb, twitter
+    if 'contact' in info:
+      if 'facebook' in info['contact'] and info['contact']['facebook']:
+        self['profiles'].append(
+              "facebook.com/profile.php?id=%s" % info['contact']['facebook'])
+      if 'twitter' in info['contact'] and info['contact']['twitter']:
+        self['profiles'].append("twitter.com/%s" % info['contact']['twitter'])
+
     if 'bio' in info and info['bio']:
       self['profiles'].append(format_url(info['bio']))
 

@@ -3,7 +3,9 @@
 
 import yql
 import simplejson
+import logging
 
+import global_settings
 from response import Response
 from scavenger import Scavenger
 from scavenger_config import YAHOO_KEY, YAHOO_PWD
@@ -17,7 +19,10 @@ class YahooScavenger(Scavenger):
 
   def process_job(self, job):
     email = job.body
+    logging.info('%s got email %s' % (YAHOO, email))
     response = self._yahoo(email)
+    logging.info('%s finished with email %s with status %s' %
+          (YAHOO, email, response['status']))
     return simplejson.dumps({
                               'type' : YAHOO,
                               'response' : response
@@ -52,26 +57,24 @@ class YahooResponse(Response):
     super(YahooResponse, self).__init__(response['status'],
                                         response['raw_data'],
                                         response['email'])
-
     data = response['raw_data']
 
     # TODO(mihai): Add a proper method to validate yahoo addresses
     self['username'] = response['email'][0:response['email'].find('@')]
-    if 'location' in data:
+    if 'location' in data and data['location']:
       self['location'] = data['location']
-    if 'gender' in data:
+    if 'gender' in data and data['gender']:
       self['gender'] = data['gender']
-    if 'displayAge' in data:
+    if 'displayAge' in data and data['displayAge']:
       self['age'] = data['displayAge']
-    if 'profileUrl' in data:
+    if 'profileUrl' in data and data['profileUrl']:
       self['profiles'] = [format_url(data['profileUrl'])]
 
     display_name = None
-    if 'nickname' in data:
+    if 'nickname' in data and data['nickname']:
       display_name = data['nickname']
     if 'familyName' in data and 'givenName' in data:
       display_name = ' '.join([data['familyName'], data['givenName']])
-
-    if display_name is not None:
+    if display_name:
       self['display_name'] = display_name
 
