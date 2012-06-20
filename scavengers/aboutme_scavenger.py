@@ -5,7 +5,7 @@
 
 import simplejson
 import urllib
-from pymongo.objectid import ObjectId
+from bson.objectid import ObjectId
 
 from bs4 import BeautifulSoup
 from scavenger import Scavenger

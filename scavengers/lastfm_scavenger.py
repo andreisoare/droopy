@@ -5,7 +5,7 @@
 
 import simplejson
 import urllib
-from pymongo.objectid import ObjectId
+from bson.objectid import ObjectId
 
 from scavenger import Scavenger
 from scavenger_config import LASTFM_KEY

@@ -7,7 +7,7 @@ import beanstalkc
 import thread
 import simplejson
 from datetime import datetime
-from pymongo.objectid import ObjectId
+from bson.objectid import ObjectId
 
 from networks_scouter import NetworkScouterScavenger
 from base.mongodb_utils import get_mongo_collection

@@ -8,7 +8,7 @@ import thread
 import simplejson
 import logging
 from datetime import datetime
-from pymongo.objectid import ObjectId
+from bson.objectid import ObjectId
 
 import global_settings
 from networks_scouter import NetworkScouterScavenger

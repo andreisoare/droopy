@@ -12,7 +12,7 @@ import thread
 import beanstalkc
 import simplejson
 from datetime import datetime
-from pymongo.objectid import ObjectId
+from bson.objectid import ObjectId
 from base.mongodb_utils import get_mongo_collection
 from mongodb.models import SocialProfile
 from scavengers.scavenger import Scavenger
