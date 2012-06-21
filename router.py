@@ -91,54 +91,53 @@ class Router:
       job.delete()
 
   def process_response(self, queue_response):
-    response_object = queue_response['response']
+    response = queue_response['response']
     network_type = queue_response['type']
 
     logging.info('Got response from %s (%s)' %\
-          (network_type, response_object['email']))
+          (network_type, response['email']))
 
-    profile_id = ObjectId(
-                        self.processing_profiles[str(response_object['email'])])
+    profile_id = ObjectId(self.processing_profiles[str(response['email'])])
 
     status = network_type + '_status'
     link = network_type + '_link'
     parsed = network_type + '_parsed'
 
     self.profiles.find_and_modify({'_id' : profile_id},
-      {'$set' : {status : int(response_object['status'])}})
-    if response_object['status'] >= 400:
+      {'$set' : {status : int(response['status'])}})
+    if response['status'] >= 400:
       self.profiles.find_and_modify({'_id' : profile_id},
         {'$set' : {link : unicode('')}})
     else:
       self.profiles.find_and_modify({'_id' : profile_id},
-        {'$set' : {link : unicode(response_object['profiles'][0])}})
+        {'$set' : {link : unicode(response['profiles'][0])}})
     self.profiles.find_and_modify({'_id' : profile_id},
-      {'$set' : {parsed: response_object}})
+      {'$set' : {parsed: response}})
 
-    if int(response_object['status']) < 400:
-      if 'username' in response_object and len(response_object['username']):
+    if int(response['status']) < 400:
+      if 'username' in response and len(response['username']):
         self.profiles.find_and_modify({'_id' : profile_id},
-          {'$set' : {'username' : unicode(response_object['username'])}})
-      if 'display_name' in response_object and \
-                                          len(response_object['display_name']):
+          {'$set' : {'username' : unicode(response['username'])}})
+      if 'display_name' in response and \
+                                          len(response['display_name']):
         self.profiles.find_and_modify({'_id' : profile_id},
-          {'$set' : {'display_name' : unicode(response_object['display_name'])}})
-      if 'age' in response_object and len(response_object['age']):
+          {'$set' : {'display_name' : unicode(response['display_name'])}})
+      if 'age' in response and len(response['age']):
         ages = list(self.profiles.find_one({'_id' : profile_id})['age'])
-        ages.append(int(response_object['age']))
+        ages.append(int(response['age']))
         sorted(ages)
         start = ages[0]
         end = ages[-1]
         self.profiles.find_and_modify({'_id' : profile_id},
           {'$set' : {'age' : [start, end]}})
-      if 'location' in response_object and len(response_object['location']):
+      if 'location' in response and len(response['location']):
         self.profiles.find_and_modify({'_id' : profile_id},
-          {'$set' : {'location' : unicode(response_object['location'])}})
-      if 'gender' in response_object and len(response_object['gender']):
+          {'$set' : {'location' : unicode(response['location'])}})
+      if 'gender' in response and len(response['gender']):
         self.profiles.find_and_modify({'_id' : profile_id},
-          {'$set' : {'gender' : unicode(response_object['gender'])}})
-      if 'profiles' in response_object:
-        for profile in response_object['profiles']:
+          {'$set' : {'gender' : unicode(response['gender'])}})
+      if 'profiles' in response:
+        for profile in response['profiles']:
           if len(profile):
             self.profiles.find_and_modify({'_id' : profile_id},
               {'$push' : {'profiles' : unicode(profile)}})
@@ -147,7 +146,7 @@ class Router:
 
 
     logging.info('Finished processing response from %s (%s)' %\
-          (network_type, response_object['email']))
+          (network_type, response['email']))
     self.test_profile_completion(profile_id)
 
   def test_profile_completion(self, profile_id):

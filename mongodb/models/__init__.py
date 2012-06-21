@@ -1,2 +1,3 @@
 from base_document import BaseDocument
 from social_profile import SocialProfile
+from facebook_identity import FacebookIdentity

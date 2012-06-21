@@ -29,19 +29,11 @@ class PinterestScavenger(Scavenger):
       return 'not'
 
     profiles = get_mongo_collection(info['collection'])
-    profile = profiles.find_one({"_id" : ObjectId(info['id'])})
-    try:
-      profile['network_candidates'][PINTEREST].append(response)
-    except:
-      profile['network_candidates'][PINTEREST] = [response]
-    profiles.save(profile)
+    location = 'network_candidates.' + PINTEREST
+    profiles.find_and_modify({'_id' : ObjectId(info['id'])},
+      {'$push' : {location : response}})
 
-    #TODO(diana) what to return
     return 'ok'
-    return simplejson.dumps({
-                              'type' : PINTEREST,
-                              'response' : response
-                            })
 
   def _pinterest(self, username, email):
     params = {}

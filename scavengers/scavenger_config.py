@@ -4,6 +4,7 @@
 # File with configuration elements.
 
 MONGO_COLLECTION = 'testingbson'
+FACEBOOK_IDENTITY_COLLECTION = 'facebook_identity' # DO NOT CHANGE THIS NAME
 
 GOOGLE_PLUS_KEY = "AIzaSyACfowiWrJPaxS5EFvI6-N07CjctMdIqhE"
 

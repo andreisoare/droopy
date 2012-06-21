@@ -31,19 +31,11 @@ class SoundcloudScavenger(Scavenger):
       return 'not'
 
     profiles = get_mongo_collection(info['collection'])
-    profile = profiles.find_one({"_id" : ObjectId(info['id'])})
-    try:
-      profile['network_candidates'][SOUNDCLOUD].append(response)
-    except:
-      profile['network_candidates'][SOUNDCLOUD] = [response]
-    profiles.save(profile)
+    location = 'network_candidates.' + SOUNDCLOUD
+    profiles.find_and_modify({'_id' : ObjectId(info['id'])},
+      {'$push' : {location : response}})
 
-    #TODO(diana) what to return
     return 'ok'
-    return simplejson.dumps({
-                              'type' : SOUNDCLOUD,
-                              'response' : response
-                            })
 
   def _soundcloud(self, username, email):
     params = {

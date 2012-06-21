@@ -7,11 +7,12 @@ import global_settings
 import pymongo
 from mongokit import Connection
 
-from mongodb.models import SocialProfile
+from mongodb.models import SocialProfile, FacebookIdentity
 
 def register_all(conn):
   """Register models to mongodb connection."""
   conn.register([SocialProfile,
+                 FacebookIdentity,
                  ])
 
 def get_mongo_connection(host=None, port=None):
