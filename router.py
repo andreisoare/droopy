@@ -9,6 +9,7 @@ import simplejson
 import logging
 from datetime import datetime
 from bson.objectid import ObjectId
+from PatternGenerator import PatternGenerator
 
 import global_settings
 from networks_scouter import NetworkScouterScavenger
@@ -169,16 +170,22 @@ class Router:
       package['collection'] = MONGO_COLLECTION
 
       # send a package for every found username in certain network
-      sent_usernames = []
+      found_usernames = []
       for network_type in scavengers_dict:
         parsed = network_type + '_parsed'
         response_object = social_profile[parsed]
         if 'username' in response_object and len(response_object['username']) \
-          and response_object['username'] not in sent_usernames:
-          sent_usernames.append(response_object['username'])
-          package['username'] = response_object['username']
-          self.username_beanstalk.put(simplejson.dumps(package))
+          and response_object['username'] not in found_usernames:
+          found_usernames.append(response_object['username'])
 
+      todo_usernames = PatternGenerator.generate (
+                                str(social_profile['email']),\
+                                str(social_profile['display_name']),\
+                                found_usernames\
+                                                  )
+      for username in todo_usernames:
+        package['username'] = username
+        self.username_beanstalk.put(simplejson.dumps(package))
 
 if __name__=="__main__":
   r = Router()
