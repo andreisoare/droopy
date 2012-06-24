@@ -1,3 +1,5 @@
+# -*- coding: latin -*-
+
 # Copyright 2012 Sunnytrail Insight Labs Inc. All rights reserved.
 # Author: tabara.mihai@gmail.com (Mihai Tabara)
 # TODO(mihai): What happens when unsufficient profiles yields the first group ?
@@ -15,14 +17,10 @@ class PatternGenerator:
   @staticmethod
   def generate(email_address, display_name, unames, get_number=GET_NUMBER):
     email_username = email_address[0:email_address.find('@')]
-
-    display_name = display_name.encode('ascii', 'ignore').lower()
+    display_name = str(unicode(display_name, errors='ignore')).lower()
 
     if display_name == '':
-      tmp_list = unames
-      if email_username not in tmp_list:
-        tmp_list.append(email_username)
-      return tmp_list
+      return list(set(unames + [email_username]))
 
     display_names = re.findall(r'\w+', display_name)
 
@@ -35,20 +33,13 @@ class PatternGenerator:
 
     # truncate if more than 3 names
     if len(display_names) > 3:
-      tmp_list = display_names[0:2]
-      tmp_list.append(display_names[-1])
-      display_names = tmp_list
-
+      display_names = display_names[0:2] + display_names[-1:]
 
     if len(display_names) == 0:
       return unames
 
     elif len(display_names) == 1:
-      tmp_list = []
-      tmp_list.extend(unames)
-      if display_names[0] not in tmp_list:
-        tmp_list.extend(display_names)
-      return tmp_list
+      return list(set(unames + display_names))
 
     elif len(display_names) == 2:
       permutations = list(itertools.permutations(display_names))
@@ -126,7 +117,7 @@ class PatternGenerator:
 
 #if __name__=="__main__":
 #  email = 'diana.tiriplica@gmail.com'
-#  display_name  = ''
+#  display_name  = 'Diana-Victoria Tiriplica'
 #  p = PatternGenerator.generate(email, display_name, [\
 #                  'diana_tiriplica', 'diana.tiriplica', 'dtiriplica'])
 #  print 'Final'

@@ -190,7 +190,7 @@ class Router:
       # generate if necessary and complete the username's list
       todo_usernames = PatternGenerator.generate (
                                 str(social_profile['email']),\
-                                str(social_profile['display_name']),\
+                                social_profile['display_name'],\
                                 found_usernames\
                                                   )
       logging.info('Email: %s -> list of usernames sent to minirouter: %s' % ( \
@@ -200,7 +200,7 @@ class Router:
 
       # send a package for every username
       for username in todo_usernames:
-        package['username'] = username
+        package['username'] = str(unicode(username, errors='ignore'))
         self.username_beanstalk.put(simplejson.dumps(package))
 
 if __name__=="__main__":
