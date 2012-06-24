@@ -162,14 +162,23 @@ class Router:
     if profile_complete is True:
       logging.info('+++++++++++++++ Finished with email %s +++++++++++++++\n' %\
               social_profile['email'])
+
+      # delete duplicates from profiles list
+      current_profiles = social_profile['profiles']
+      current_profiles = list(set(current_profiles))
+      self.profiles.find_and_modify({'_id' : profile_id},
+              {'$set' : {'profiles' : current_profiles}})
+
+      # delete job from router's currently processing list
       del self.processing_profiles[str(social_profile['email'])]
-      # send package on mini-router's username_queue
+
+      # prepare package for sending on mini-router's username_queue
       package = {}
       package['email'] = str(social_profile['email'])
       package['id'] = str(social_profile['_id'])
       package['collection'] = MONGO_COLLECTION
 
-      # send a package for every found username in certain network
+      # gather the current usernames found
       found_usernames = []
       for network_type in scavengers_dict:
         parsed = network_type + '_parsed'
@@ -178,11 +187,18 @@ class Router:
           and response_object['username'] not in found_usernames:
           found_usernames.append(response_object['username'])
 
+      # generate if necessary and complete the username's list
       todo_usernames = PatternGenerator.generate (
                                 str(social_profile['email']),\
                                 str(social_profile['display_name']),\
                                 found_usernames\
                                                   )
+      logging.info('Email: %s -> list of usernames sent to minirouter:' % \
+                          str(social_profile['email']))
+      for username in todo_usernames:
+        logging.info('[%s] %s' % (str(social_profile['email']), username))
+
+      # send a package for every username
       for username in todo_usernames:
         package['username'] = username
         self.username_beanstalk.put(simplejson.dumps(package))

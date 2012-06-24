@@ -1,3 +1,7 @@
+# Copyright 2012 Sunnytrail Insight Labs Inc. All rights reserved.
+# Author: tabara.mihai@gmail.com (Mihai Tabara)
+# TODO(mihai): What happens when unsufficient profiles yields the first group ?
+
 import random
 import itertools
 import operator
@@ -12,6 +16,10 @@ class PatternGenerator:
     email_username = email_address[0:email_address.find('@')]
 
     display_name = display_name.encode('ascii', 'ignore')
+
+    if display_name == '':
+      return [email_username]
+
     display_names = []
     for word in display_name.lower().split():
       display_names.extend(word.split('-'))
