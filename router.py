@@ -9,7 +9,7 @@ import simplejson
 import logging
 from datetime import datetime
 from bson.objectid import ObjectId
-from PatternGenerator import PatternGenerator
+from pattern_generator import PatternGenerator
 
 import global_settings
 from networks_scouter import NetworkScouterScavenger
@@ -193,10 +193,10 @@ class Router:
                                 str(social_profile['display_name']),\
                                 found_usernames\
                                                   )
-      logging.info('Email: %s -> list of usernames sent to minirouter:' % \
-                          str(social_profile['email']))
-      for username in todo_usernames:
-        logging.info('[%s] %s' % (str(social_profile['email']), username))
+      logging.info('Email: %s -> list of usernames sent to minirouter: %s' % ( \
+                          str(social_profile['email']),\
+                          str(todo_usernames))\
+                  )
 
       # send a package for every username
       for username in todo_usernames:

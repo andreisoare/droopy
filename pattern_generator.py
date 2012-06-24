@@ -6,6 +6,7 @@ import random
 import itertools
 import operator
 import string
+import re
 
 GET_NUMBER = 5
 UPPER_LIMIT = 4
@@ -15,14 +16,15 @@ class PatternGenerator:
   def generate(email_address, display_name, unames, get_number=GET_NUMBER):
     email_username = email_address[0:email_address.find('@')]
 
-    display_name = display_name.encode('ascii', 'ignore')
+    display_name = display_name.encode('ascii', 'ignore').lower()
 
     if display_name == '':
-      return [email_username]
+      tmp_list = unames
+      if email_username not in tmp_list:
+        tmp_list.append(email_username)
+      return tmp_list
 
-    display_names = []
-    for word in display_name.lower().split():
-      display_names.extend(word.split('-'))
+    display_names = re.findall(r'\w+', display_name)
 
     importance_dict = {}
     for display_name in display_names:
@@ -33,13 +35,20 @@ class PatternGenerator:
 
     # truncate if more than 3 names
     if len(display_names) > 3:
-      display_names = display_names[0:3]
+      tmp_list = display_names[0:2]
+      tmp_list.append(display_names[-1])
+      display_names = tmp_list
+
 
     if len(display_names) == 0:
-      return []
+      return unames
 
     elif len(display_names) == 1:
-      return display_names
+      tmp_list = []
+      tmp_list.extend(unames)
+      if display_names[0] not in tmp_list:
+        tmp_list.extend(display_names)
+      return tmp_list
 
     elif len(display_names) == 2:
       permutations = list(itertools.permutations(display_names))
@@ -61,20 +70,20 @@ class PatternGenerator:
     # chose random sample from best chunk of usernames
     sorted_x = sorted(score_dict.iteritems(), key=operator.itemgetter(1), \
                 reverse=True)
-    group_x = itertools.groupby(sorted_x,operator.itemgetter(1))
+    group_x = itertools.groupby(sorted_x, operator.itemgetter(1))
     for key, group in group_x:
       interest_x = (list(group))
       best_score = key
       break
 
     result_x = [(uname, best_score) for uname in unames]
-    global UPPER_LIMIT
 
     if len(result_x) < UPPER_LIMIT:
       while len(result_x) < GET_NUMBER:
         try:
           random_pick = random.choice(interest_x)
         except IndexError:
+          print 'Error! Empty set give here'
           continue
         if random_pick not in result_x:
           result_x.append(random_pick)
@@ -116,9 +125,9 @@ class PatternGenerator:
     return return_dict
 
 #if __name__=="__main__":
-  #email = 'diana.tiriplica@gmail.com'
-  #display_name  = 'Diana-Victoria Tiriplica'
-  #p = PatternGenerator.generate(email, display_name, [\
-  #                'diana_tiriplica', 'diana.tiriplica', 'dtiriplica'])
-  #print 'Final'
-  #print p
+#  email = 'diana.tiriplica@gmail.com'
+#  display_name  = ''
+#  p = PatternGenerator.generate(email, display_name, [\
+#                  'diana_tiriplica', 'diana.tiriplica', 'dtiriplica'])
+#  print 'Final'
+#  print p
