@@ -9,7 +9,7 @@ import global_settings
 from response import Response
 from scavenger import Scavenger
 from scavenger_config import YAHOO_KEY, YAHOO_PWD
-from scavenger_utils import NOT_FOUND_ERROR_CODE, OK_CODE, format_url
+from scavenger_utils import NOT_FOUND_ERROR_CODE, OK_CODE, process_profiles
 
 YAHOO = "yahoo"
 
@@ -58,6 +58,7 @@ class YahooResponse(Response):
                                         response['raw_data'],
                                         response['email'])
     data = response['raw_data']
+    profiles = []
 
     # TODO(mihai): Add a proper method to validate yahoo addresses
     self['username'] = response['email'][0:response['email'].find('@')]
@@ -68,7 +69,7 @@ class YahooResponse(Response):
     if 'displayAge' in data and data['displayAge']:
       self['age'] = data['displayAge']
     if 'profileUrl' in data and data['profileUrl']:
-      self['profiles'] = [format_url(data['profileUrl'])]
+      profiles = [data['profileUrl']]
 
     display_name = None
     if 'nickname' in data and data['nickname']:
@@ -77,4 +78,10 @@ class YahooResponse(Response):
       display_name = ' '.join([data['familyName'], data['givenName']])
     if display_name:
       self['display_name'] = display_name
+
+    if profiles:
+      response = process_profiles(profiles)
+      self['profiles'] = profiles
+      if response:
+        self.enhance_response(response)
 

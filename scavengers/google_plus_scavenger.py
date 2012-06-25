@@ -13,7 +13,7 @@ import global_settings
 from scavenger import Scavenger
 from scavenger_config import GOOGLE_PLUS_KEY
 from response import Response
-from scavenger_utils import http_request, format_url, NOT_FOUND_ERROR_CODE
+from scavenger_utils import http_request, NOT_FOUND_ERROR_CODE, process_profiles
 
 GOOGLE_PLUS = "google_plus"
 PICASA_HOST = "picasaweb.google.com"
@@ -83,6 +83,7 @@ class GooglePlusResponse(Response):
     super(GooglePlusResponse, self).__init__(response['status'],
                           response['raw_data'], response['email'])
     info = simplejson.loads(self['raw_data'])
+    profiles = []
 
     if 'displayName' in info and info['displayName']:
       self['display_name'] = info['displayName']
@@ -100,16 +101,21 @@ class GooglePlusResponse(Response):
     if 'gender' in info and info['gender']:
       self['gender'] = info['gender']
 
-    self['profiles'] = []
     if 'urls' in info and info['urls']:
       for url in info['urls']:
         if 'type' in url.keys():
           if url['type'] == "profile":
             if 'value' in url and url['value']:
-              self['profiles'].insert(0, format_url(url['value']))
+              profiles.insert(0, url['value'])
           else:
             continue
         else:
           if 'value' in url and url['value']:
-            self['profiles'].append(format_url(url['value']))
+            profiles.append(url['value'])
+
+    if profiles:
+      response = process_profiles(profiles)
+      self['profiles'] = profiles
+      if response:
+        self.enhance_response(response)
 

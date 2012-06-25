@@ -10,7 +10,7 @@ import logging
 import global_settings
 from scavenger import Scavenger
 from response import Response
-from scavenger_utils import http_request, format_url
+from scavenger_utils import http_request, process_profiles
 
 GITHUB = "github"
 GITHUB_HOST = "api.github.com"
@@ -45,6 +45,7 @@ class GithubResponse(Response):
     super(GithubResponse, self).__init__(response['status'],
                           response['raw_data'], response['email'])
     info = simplejson.loads(response['raw_data'])['user']
+    profiles = []
 
     if 'name' in info and info['name']:
       self['display_name'] = info['name']
@@ -52,7 +53,13 @@ class GithubResponse(Response):
       self['location'] = info['location']
     if 'login' in info and info['login']:
       self['username'] = info['login']
-      self['profiles'] = ["github.com/" + info['login']]
+      profiles = ["github.com/" + info['login']]
     if 'blog' in info and info['blog']:
-      self['profiles'].append(format_url(info['blog']))
+      profiles.append(info['blog'])
+
+    if profiles:
+      response = process_profiles(profiles)
+      self['profiles'] = profiles
+      if response:
+        self.enhance_response(response)
 

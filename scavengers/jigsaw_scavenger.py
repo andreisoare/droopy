@@ -8,7 +8,7 @@ import logging
 import global_settings
 from scavenger import Scavenger
 from scavenger_config import JIGSAW_KEY
-from scavenger_utils import http_request, NOT_FOUND_ERROR_CODE, format_url
+from scavenger_utils import http_request, NOT_FOUND_ERROR_CODE, process_profiles
 from response import Response
 
 JIGSAW = "jigsaw"
@@ -55,6 +55,7 @@ class JigsawResponse(Response):
                          response['raw_data'], response['email'])
     message = response['raw_data']
     info = simplejson.loads(message)['contacts'][0]
+    profiles = []
 
     firstName = ''
     lastName = ''
@@ -79,5 +80,11 @@ class JigsawResponse(Response):
       self['location'] = ('%s %s %s' % (city, state, country)).strip()
 
     if 'contactURL' in info and info['contactURL']:
-      self['profiles'] = [format_url(info['contactURL'])]
+      profiles = [info['contactURL']]
+
+    if profiles:
+      response = process_profiles(profiles)
+      self['profiles'] = profiles
+      if response:
+        self.enhance_response(response)
 

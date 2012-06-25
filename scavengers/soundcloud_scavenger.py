@@ -10,7 +10,7 @@ from bson.objectid import ObjectId
 from scavenger import Scavenger
 from scavenger_config import SOUNDCLOUD_KEY
 from response import Response
-from scavenger_utils import http_request, NOT_FOUND_ERROR_CODE, format_url
+from scavenger_utils import http_request, NOT_FOUND_ERROR_CODE, process_profiles
 from base.mongodb_utils import get_mongo_collection
 
 SOUNDCLOUD = 'soundcloud'
@@ -63,6 +63,7 @@ class SoundcloudResponse(Response):
     super(SoundcloudResponse, self).__init__(response['status'],
                           response['raw_data'], response['email'])
     users_list = simplejson.loads(response['raw_data'])
+    profiles = []
 
     found = False
     for info in users_list:
@@ -83,11 +84,17 @@ class SoundcloudResponse(Response):
       if city or country:
         self['location'] = ("%s %s" % (city, country)).strip()
       if 'permalink_url' in info and info['permalink_url']:
-        self['profiles'] = [format_url(info['permalink_url'])]
+        profiles = [info['permalink_url']]
       if 'website' in info and info['website']:
-        self['profiles'].append(format_url(info['website']))
+        profiles.append(info['website'])
       break
 
     if not found:
       self['status'] = NOT_FOUND_ERROR_CODE
+
+    if profiles:
+      response = process_profiles(profiles)
+      self['profiles'] = profiles
+      if response:
+        self.enhance_response(response)
 

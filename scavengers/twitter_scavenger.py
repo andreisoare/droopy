@@ -10,7 +10,7 @@ from bson.objectid import ObjectId
 from bs4 import BeautifulSoup
 from scavenger import Scavenger
 from response import Response
-from scavenger_utils import http_request, format_url
+from scavenger_utils import http_request, process_profiles
 from base.mongodb_utils import get_mongo_collection
 
 TWITTER = 'twitter'
@@ -51,7 +51,7 @@ class TwitterResponse(Response):
     data = BeautifulSoup(response['raw_data'])
 
     self['username'] = username
-    self['profiles'] = [TWITTER_HOST + "/" + username]
+    profiles = [TWITTER_HOST + "/" + username]
     profile = data.find(id='profile')
     if profile:
       for x in profile.address.ul.find_all('li'):
@@ -63,5 +63,11 @@ class TwitterResponse(Response):
         elif spans[0].string == 'Location':
           self['location'] = spans[1].string
         elif spans[0].string == 'Web':
-          self['profiles'].append(format_url(x.a.get('href')))
+          profiles.append(x.a.get('href'))
+
+    if profiles:
+      response = process_profiles(profiles)
+      self['profiles'] = profiles
+      if response:
+        self.enhance_response(response)
 

@@ -10,7 +10,7 @@ from bson.objectid import ObjectId
 from bs4 import BeautifulSoup
 from scavenger import Scavenger
 from response import Response
-from scavenger_utils import http_request, NOT_FOUND_ERROR_CODE, format_url
+from scavenger_utils import http_request, NOT_FOUND_ERROR_CODE, process_profiles
 from base.mongodb_utils import get_mongo_collection
 
 #TODO(diana) check if there are more buttons in CONTENT
@@ -55,7 +55,7 @@ class AboutmeResponse(Response):
                           response['raw_data'], response['email'])
     data = BeautifulSoup(response['raw_data'])
 
-    self['profiles'] = [ABOUTME_HOST + "/" + username]
+    profiles = [ABOUTME_HOST + "/" + username]
     self['username'] = username
 
     profile_box = data.find(id='profile_box')
@@ -67,7 +67,7 @@ class AboutmeResponse(Response):
         pass
 
     for website in data.find_all('a', {'class': 'website'}):
-      self['profiles'].append(format_url(website.get('href')))
+      profiles.append(website.get('href'))
 
     for content in ABOUTME_CONTENT:
       content_response = http_request(self['email'], 'GET', ABOUTME_HOST,
@@ -77,7 +77,13 @@ class AboutmeResponse(Response):
       try:
         profile = body.find('div', {'class':'top_section'}).h1.a.get('href')
         if profile:
-          self['profiles'].append(format_url(profile))
+          profiles.append(profile)
       except:
         pass
+
+    if profiles:
+      response = process_profiles(profiles)
+      self['profiles'] = profiles
+      if response:
+        self.enhance_response(response)
 

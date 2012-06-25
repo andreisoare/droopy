@@ -12,7 +12,7 @@ import global_settings
 from scavenger import Scavenger
 from scavenger_config import FOURSQUARE_OAUTH
 from response import Response
-from scavenger_utils import http_request, NOT_FOUND_ERROR_CODE, format_url
+from scavenger_utils import http_request, NOT_FOUND_ERROR_CODE, process_profiles
 
 FOURSQUARE = "foursquare"
 FOURSQUARE_HOST = "api.foursquare.com"
@@ -60,6 +60,7 @@ class FoursquareResponse(Response):
                           response['raw_data'], response['email'])
     data = simplejson.loads(self['raw_data'])
     info = data['response']['results'][0]
+    profiles = []
 
     firstName = ''
     lastName = ''
@@ -75,16 +76,22 @@ class FoursquareResponse(Response):
     if 'homeCity' in info and info['homeCity']:
       self['location'] = info['homeCity']
     if 'id' in info and info['id']:
-      self['profiles'] = ['foursquare.com/user/' + info['id']]
+      profiles = ['foursquare.com/user/' + info['id']]
 
     #TODO(diana) check if contact field has others than fb, twitter
     if 'contact' in info:
       if 'facebook' in info['contact'] and info['contact']['facebook']:
-        self['profiles'].append(
+        profiles.append(
               "facebook.com/profile.php?id=%s" % info['contact']['facebook'])
       if 'twitter' in info['contact'] and info['contact']['twitter']:
-        self['profiles'].append("twitter.com/%s" % info['contact']['twitter'])
+        profiles.append("twitter.com/%s" % info['contact']['twitter'])
 
     if 'bio' in info and info['bio']:
-      self['profiles'].append(format_url(info['bio']))
+      profiles.append(info['bio'])
+
+    if profiles:
+      response = process_profiles(profiles)
+      self['profiles'] = profiles
+      if response:
+        self.enhance_response(response)
 

@@ -10,7 +10,7 @@ from bson.objectid import ObjectId
 from bs4 import BeautifulSoup
 from scavenger import Scavenger
 from response import Response
-from scavenger_utils import http_request, format_url
+from scavenger_utils import http_request, process_profiles
 from base.mongodb_utils import get_mongo_collection
 
 PINTEREST = 'pinterest'
@@ -49,19 +49,26 @@ class PinterestResponse(Response):
     super(PinterestResponse, self).__init__(response['status'],
                           response['raw_data'], response['email'])
     data = BeautifulSoup(response['raw_data'])
+    profiles = []
 
     self['username'] = username
     try:
       self['display_name'] = data.find(id='ProfileHeader').h1.string
     except:
       pass
-    self['profiles'] = ["%s/%s/" % (PINTEREST_HOST, username)]
-    profiles = data.find(id='ProfileLinks')
-    if profiles:
-      for elem in profiles.find_all('li'):
+    profiles = ["%s/%s/" % (PINTEREST_HOST, username)]
+    data_profiles = data.find(id='ProfileLinks')
+    if data_profiles:
+      for elem in data_profiles.find_all('li'):
         try:
-          self['profiles'].append(format_url(elem.a.get('href')))
+          profiles.append(elem.a.get('href'))
         except:
           if elem.get('id') == 'ProfileLocation':
             self['location'] = elem.get_text().strip()
+
+    if profiles:
+      response = process_profiles(profiles)
+      self['profiles'] = profiles
+      if response:
+        self.enhance_response(response)
 

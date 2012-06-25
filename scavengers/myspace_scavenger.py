@@ -9,7 +9,7 @@ import logging
 import global_settings
 from scavenger import Scavenger
 from response import Response
-from scavenger_utils import http_request, format_url
+from scavenger_utils import http_request, process_profiles
 
 MYSPACE = "myspace"
 MYSPACE_HOST = "api.myspace.com"
@@ -49,6 +49,7 @@ class MyspaceResponse(Response):
     # TODO(diana) check if profiles are given back
     data = simplejson.loads(self['raw_data'])
     info = data['entry'][0]
+    profiles = []
 
     if 'displayName' in info and info['displayName']:
       self['display_name'] = info['displayName']
@@ -59,5 +60,11 @@ class MyspaceResponse(Response):
     if 'location' in info and info['location']:
       self['location'] = info['location']
     if 'profileUrl' in info and info['profileUrl']:
-      self['profiles'] = [format_url(info['profileUrl'])]
+      profiles = [info['profileUrl']]
+
+    if profiles:
+      response = process_profiles(profiles)
+      self['profiles'] = profiles
+      if response:
+        self.enhance_response(response)
 

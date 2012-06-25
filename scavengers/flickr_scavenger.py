@@ -7,7 +7,7 @@ import logging
 import global_settings
 from scavenger import Scavenger
 from scavenger_config import FLICKR_KEY, FLICKR_PWD
-from scavenger_utils import http_request, NOT_FOUND_ERROR_CODE, format_url
+from scavenger_utils import http_request, NOT_FOUND_ERROR_CODE, process_profiles
 from response import Response
 
 FLICKR = 'flickr'
@@ -73,6 +73,7 @@ class FlickrResponse(Response):
     message = response['raw_data']
     message = message[RESPONSE_PREFIX_LENGTH:len(message)-1]
     info = simplejson.loads(message)['person']
+    profiles = []
 
     if 'username' in info and info['username']['_content']:
       self['username'] = info['username']['_content']
@@ -80,6 +81,13 @@ class FlickrResponse(Response):
       self['display_name'] = info['realname']['_content']
     if 'location' in info and info['location']['_content']:
       self['location'] = info['location']['_content']
+    profiles = []
     if 'profileurl' in info and info['profileurl']['_content']:
-      self['profiles'] = [format_url(info['profileurl']['_content'])]
+      profiles = [info['profileurl']['_content']]
+
+    if profiles:
+      response = process_profiles(profiles)
+      self['profiles'] = profiles
+      if response:
+        self.enhance_response(response)
 

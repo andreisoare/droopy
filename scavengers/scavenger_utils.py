@@ -5,6 +5,7 @@
 import logging
 import simplejson
 import re
+import time
 from httplib import HTTPConnection, HTTPSConnection, HTTPResponse, HTTP_PORT
 from urllib import urlencode
 from datetime import datetime
@@ -41,9 +42,24 @@ def format_url(url):
 
   return url
 
+def process_profiles(profiles):
+  response = None
+  for i in range(len(profiles)):
+    profiles[i] = format_url(profiles[i])
+    if not re.search('^facebook.com/.*$', profiles[i]):
+      continue
+    r = get_facebook_identity(profiles[i])
+    if not response:
+      response = r
+    if r:
+      profiles[i] = unicode('facebook.com/profile.php?id=' + r['id'])
+  return response
+
 def get_facebook_identity(profile):
   profile = format_url(profile)
   pid, username = get_id_or_username(profile)
+  if not pid and not username:
+    return None
 
   response = check_if_exists(pid, username)
   if response:
@@ -51,14 +67,18 @@ def get_facebook_identity(profile):
 
   path = pid or username
   response = http_request('', "GET", FACEBOOK_HOST, '/%s' % path, {})
-  if response.is_error():
+  time.sleep(1)
+  if response.is_error() or 'error' in response['raw_data']:
     return None
 
   response = simplejson.loads(response['raw_data'])
+  username = ''
+  if 'username' in response:
+    username = unicode(response['username'])
   identity = {
               'time' : datetime.now(),
               'profile_id' : int(response['id']),
-              'profile_user' : unicode(response['username']),
+              'profile_user' : username,
               'response' : response,
             }
   facebook_identities = get_mongo_collection(FACEBOOK_IDENTITY_COLLECTION)

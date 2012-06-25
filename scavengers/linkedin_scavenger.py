@@ -10,7 +10,7 @@ from bson.objectid import ObjectId
 from bs4 import BeautifulSoup
 from scavenger import Scavenger
 from response import Response
-from scavenger_utils import http_request, format_url
+from scavenger_utils import http_request, process_profiles
 from base.mongodb_utils import get_mongo_collection
 
 LINKEDIN = 'linkedin'
@@ -51,7 +51,7 @@ class LinkedinResponse(Response):
                           response['raw_data'], response['email'])
     data = BeautifulSoup(response['raw_data'])
 
-    self['profiles'] = [format_url(LINKEDIN_HOST + LINKEDIN_PATH + username)]
+    profiles = [LINKEDIN_HOST + LINKEDIN_PATH + username]
     self['username'] = username
 
     name = data.find(id="name")
@@ -75,4 +75,10 @@ class LinkedinResponse(Response):
                 headline.find('span', {'class' : 'locality'}).get_text().strip()
       except:
         pass
+
+    if profiles:
+      response = process_profiles(profiles)
+      self['profiles'] = profiles
+      if response:
+        self.enhance_response(response)
 
