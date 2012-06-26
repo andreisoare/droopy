@@ -64,6 +64,9 @@ class Router:
         continue
 
       email = job.body
+      # if the email has already been processed
+      if self.profiles.find_one({'email' : email}):
+        continue
       logging.info('================ Got email %s =================\n' % email)
       social_profile = self.profiles.SocialProfile()
       social_profile['email'] = unicode(email)
