@@ -66,6 +66,7 @@ class Router:
       email = job.body
       # if the email has already been processed
       if self.profiles.find_one({'email' : email}):
+        job.delete()
         continue
       logging.info('================ Got email %s =================\n' % email)
       social_profile = self.profiles.SocialProfile()
