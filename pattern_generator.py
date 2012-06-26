@@ -2,7 +2,6 @@
 
 # Copyright 2012 Sunnytrail Insight Labs Inc. All rights reserved.
 # Author: tabara.mihai@gmail.com (Mihai Tabara)
-# TODO(mihai): What happens when unsufficient profiles yields the first group ?
 
 import random
 import itertools
@@ -15,11 +14,17 @@ import global_settings
 
 GET_NUMBER = 5
 UPPER_LIMIT = 4
+CYCLE_TIMEOUT = 25
 
 class PatternGenerator:
   @staticmethod
   def generate(email_address, display_name, unames, get_number=GET_NUMBER):
-    email_username = email_address[0:email_address.find('@')]
+    try:
+      email_username = email_address[0:email_address.find('@')]
+    except:
+      logging.warn('Error! Email missing!')
+      return []
+
     try:
       display_name = display_name.encode('ascii', 'ignore').lower()
     except:
@@ -30,6 +35,7 @@ class PatternGenerator:
       return list(set(unames + [email_username]))
 
     display_names = re.findall(r'\w+', display_name)
+    display_names = list(set(display_names))
 
     importance_dict = {}
     for display_name in display_names:
@@ -43,25 +49,26 @@ class PatternGenerator:
       display_names = display_names[0:2] + display_names[-1:]
 
     if len(display_names) == 0:
-      return unames
+      return list(set(unames + [email_username]))
 
     elif len(display_names) == 1:
-      return list(set(unames + display_names))
+      return list(set(unames + display_names + [email_username]))
 
     elif len(display_names) == 2:
-      permutations = list(itertools.permutations(display_names))
+      permutations = list(set(list(itertools.permutations(display_names))))
       score_dict = PatternGenerator.bigenerate(permutations, importance_dict)
 
     elif len(display_names) == 3:
       # generate 3-element pairs
-      permutations = list(itertools.permutations(display_names))
+      permutations = list(set(list(itertools.permutations(display_names))))
       dict3 = PatternGenerator.trigenerate(permutations, importance_dict)
 
       # generate 2-length combinations
-      combinations = list(itertools.combinations(display_names, 2))
+      combinations = list(set(list(itertools.combinations(display_names, 2))))
       permutations = []
       for combination in combinations:
         permutations.extend(list(itertools.permutations(list(combination))))
+      permutations = list(set(permutations))
       dict2 = PatternGenerator.bigenerate(permutations, importance_dict)
       score_dict = dict(dict2.items() + dict3.items())
 
@@ -76,8 +83,13 @@ class PatternGenerator:
 
     result_x = [(uname, best_score) for uname in unames]
 
+    step_count = 0
     if len(result_x) < UPPER_LIMIT:
       while len(result_x) < GET_NUMBER:
+        if step_count > CYCLE_TIMEOUT:
+          result_x = list(set(result_x + [(email_username, best_score)]))
+          break
+        step_count += 1
         try:
           random_pick = random.choice(interest_x)
         except IndexError:
@@ -123,9 +135,13 @@ class PatternGenerator:
     return return_dict
 
 #if __name__=="__main__":
-#  email = 'diana.tiriplica@gmail.com'
-#  display_name  = 'Diana-Victoria Tiriplica'
-#  p = PatternGenerator.generate(email, display_name, [\
-#                  'diana_tiriplica', 'diana.tiriplica', 'dtiriplica'])
-#  print 'Final'
-#  print p
+  #email = 'diana.tiriplica@gmail.com'
+  #display_name  = 'Diana-Victoria Tiriplica'
+  #p = PatternGenerator.generate(email, display_name, [\
+  #                'diana_tiriplica', 'diana.tiriplica', 'dtiriplica'])
+  #p = PatternGenerator.generate(email, display_name, [])
+  #p = PatternGenerator.generate('infoasg@yahoo.com', 'S S', ['infoasg'])
+  #p = PatternGenerator.generate('camp101988@yahoo.com', 'Mihai-Taba Viorel.', [])
+  #p = PatternGenerator.generate('camp101988@yahoo.com', 'Mihai-Tabara V.', [])
+  #print 'Final'
+  #print p
