@@ -104,46 +104,49 @@ class Router:
     link = network_type + '_link'
     parsed = network_type + '_parsed'
 
-    self.profiles.find_and_modify({'_id' : profile_id},
-      {'$set' : {status : int(response['status'])}})
-    if response['status'] >= 400:
+    try:
       self.profiles.find_and_modify({'_id' : profile_id},
-        {'$set' : {link : unicode('')}})
-    else:
+        {'$set' : {status : int(response['status'])}})
+      if response['status'] >= 400:
+        self.profiles.find_and_modify({'_id' : profile_id},
+          {'$set' : {link : unicode('')}})
+      else:
+        self.profiles.find_and_modify({'_id' : profile_id},
+          {'$set' : {link : unicode(response['profiles'][0])}})
       self.profiles.find_and_modify({'_id' : profile_id},
-        {'$set' : {link : unicode(response['profiles'][0])}})
-    self.profiles.find_and_modify({'_id' : profile_id},
-      {'$set' : {parsed: response}})
+        {'$set' : {parsed: response}})
 
-    if int(response['status']) < 400:
-      if 'username' in response and len(response['username']):
-        self.profiles.find_and_modify({'_id' : profile_id},
-          {'$set' : {'username' : unicode(response['username'])}})
-      if 'display_name' in response and \
-                                          len(response['display_name']):
-        self.profiles.find_and_modify({'_id' : profile_id},
-          {'$set' : {'display_name' : unicode(response['display_name'])}})
-      if 'age' in response and len(response['age']):
-        ages = list(self.profiles.find_one({'_id' : profile_id})['age'])
-        ages.append(int(response['age']))
-        sorted(ages)
-        start = ages[0]
-        end = ages[-1]
-        self.profiles.find_and_modify({'_id' : profile_id},
-          {'$set' : {'age' : [start, end]}})
-      if 'location' in response and len(response['location']):
-        self.profiles.find_and_modify({'_id' : profile_id},
-          {'$set' : {'location' : unicode(response['location'])}})
-      if 'gender' in response and len(response['gender']):
-        self.profiles.find_and_modify({'_id' : profile_id},
-          {'$set' : {'gender' : unicode(response['gender'])}})
-      if 'profiles' in response:
-        for profile in response['profiles']:
-          if len(profile):
-            self.profiles.find_and_modify({'_id' : profile_id},
-              {'$push' : {'profiles' : unicode(profile)}})
-    self.profiles.find_and_modify({'_id' : profile_id},
-      {'$set' : {'time' : datetime.now()}})
+      if int(response['status']) < 400:
+        if 'username' in response and len(response['username']):
+          self.profiles.find_and_modify({'_id' : profile_id},
+            {'$set' : {'username' : unicode(response['username'])}})
+        if 'display_name' in response and \
+                                            len(response['display_name']):
+          self.profiles.find_and_modify({'_id' : profile_id},
+            {'$set' : {'display_name' : unicode(response['display_name'])}})
+        if 'age' in response and len(response['age']):
+          ages = list(self.profiles.find_one({'_id' : profile_id})['age'])
+          ages.append(int(response['age']))
+          sorted(ages)
+          start = ages[0]
+          end = ages[-1]
+          self.profiles.find_and_modify({'_id' : profile_id},
+            {'$set' : {'age' : [start, end]}})
+        if 'location' in response and len(response['location']):
+          self.profiles.find_and_modify({'_id' : profile_id},
+            {'$set' : {'location' : unicode(response['location'])}})
+        if 'gender' in response and len(response['gender']):
+          self.profiles.find_and_modify({'_id' : profile_id},
+            {'$set' : {'gender' : unicode(response['gender'])}})
+        if 'profiles' in response:
+          for profile in response['profiles']:
+            if len(profile):
+              self.profiles.find_and_modify({'_id' : profile_id},
+                {'$push' : {'profiles' : unicode(profile)}})
+      self.profiles.find_and_modify({'_id' : profile_id},
+        {'$set' : {'time' : datetime.now()}})
+    except:
+      logging.warn('Got a problem  when saving response %s' % response)
 
 
     logging.info('Finished processing response from %s (%s)' %\
@@ -185,7 +188,13 @@ class Router:
         response_object = social_profile[parsed]
         if 'username' in response_object and len(response_object['username']) \
           and response_object['username'] not in found_usernames:
-          found_usernames.append(response_object['username'])
+          try:
+            found_usernames.append(response_object['username'].encode('ascii',
+                                              'ignore'))
+          except:
+            logging.warn('Got a problem when encoding username %s' %
+                                                  response_object['username'])
+            found_usernames.append(response_object['username'])
 
       # generate if necessary and complete the username's list
       todo_usernames = PatternGenerator.generate (

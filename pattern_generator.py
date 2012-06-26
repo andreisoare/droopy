@@ -9,6 +9,9 @@ import itertools
 import operator
 import string
 import re
+import logging
+
+import global_settings
 
 GET_NUMBER = 5
 UPPER_LIMIT = 4
@@ -17,7 +20,11 @@ class PatternGenerator:
   @staticmethod
   def generate(email_address, display_name, unames, get_number=GET_NUMBER):
     email_username = email_address[0:email_address.find('@')]
-    display_name = str(unicode(display_name, errors='ignore')).lower()
+    try:
+      display_name = display_name.encode('ascii', 'ignore').lower()
+    except:
+      logging.warn('Could not encode display name %s' % display_name)
+      return []
 
     if display_name == '':
       return list(set(unames + [email_username]))
