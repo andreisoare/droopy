@@ -197,9 +197,13 @@ class Router:
             found_usernames.append(response_object['username'])
 
       # generate if necessary and complete the username's list
+      dn = ''
+      if 'display_name' in social_profile and social_profile['display_name']:
+        dn = social_profile['display_name']
       todo_usernames = PatternGenerator.generate (
                                 str(social_profile['email']),\
-                                social_profile['display_name'],\
+                              #  social_profile['display_name'],\
+                                dn,\
                                 found_usernames\
                                                   )
       logging.info('Email: %s -> list of usernames sent to minirouter: %s' % ( \
