@@ -97,8 +97,9 @@ class Router:
     social_profile[parsed] = response_object
 
     if int(response_object['status']) < 400:
-      if 'username' in response_object and len(response_object['username']):
-        social_profile.username = unicode(response_object['username'])
+      if 'username' in response_object and len(response_object['username']) and\
+          response_object['username'] not in social_profile.usernames:
+        social_profile.usernames.append(unicode(response_object['username']))
       if 'display_name' in response_object and \
                                           len(response_object['display_name']):
         social_profile.display_name = unicode(response_object['display_name'])
@@ -115,7 +116,8 @@ class Router:
         social_profile.gender = unicode(response_object['gender'])
       if 'profiles' in response_object:
         for profile in response_object['profiles']:
-          social_profile.profiles.append(unicode(profile))
+          if len(profile):
+            social_profile.profiles.append(unicode(profile))
 
     social_profile.time = datetime.now()
     social_profile.save()

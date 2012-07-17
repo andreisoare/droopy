@@ -24,7 +24,7 @@ class SocialProfile(BaseDocument):
     # Personal data
     'age': [int, int],
     'location': unicode,
-    'username': unicode,
+    'usernames': [unicode],
     'display_name': unicode,
     'profiles': [unicode],
     'gender': unicode,
@@ -76,6 +76,7 @@ class SocialProfile(BaseDocument):
     'yahoo_status': 0,
     'foursquare_status': 0,
     'age': [],
+    'usernames': [],
     'profiles': [],
     'network_candidates': {},
   }
